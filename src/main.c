@@ -1,5 +1,4 @@
 #include <genesis.h>
-#include <tools.h>
 
 int main() {
   VDP_drawText("Oispa kaljaa", 2, 2);
