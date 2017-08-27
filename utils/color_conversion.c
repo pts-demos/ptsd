@@ -7,6 +7,7 @@
 // by converting R G and B color codes into a single 16-bit integer
 // Each color channel must be less than 8 in value
 
+typedef uint32_t u32;
 typedef uint16_t u16;
 typedef uint8_t u8;
 
@@ -61,7 +62,22 @@ int main(int argc, char** argv)
 	b = 7;
 	u16 VDP_col = rgbToU16(r, g, b);
 
-	print_u16_bin(sizeof(VDP_col), &VDP_col);
+	//print_u16_bin(sizeof(VDP_col), &VDP_col);
+
+	u32 test_chan = 0x11111111;
+
+	u16 channel_index = 1;
+	u32 all_chans = (channel_index << 28)
+		+ (channel_index << 24)
+		+ (channel_index << 20)
+		+ (channel_index << 16)
+		+ (channel_index << 12)
+		+ (channel_index << 8)
+		+ (channel_index << 4)
+		+ (channel_index);
+
+	print_u16_bin(sizeof(u32), &all_chans);
+	print_u16_bin(sizeof(u32), &test_chan);
 	return 0;
 }
 
