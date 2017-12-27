@@ -1,8 +1,15 @@
 #include <genesis.h>
 #include <vdp.h>
+#include "sin_bar.h"
 
 // Load a pre-generated sine table
-#include "sindata.h"
+#define SIN_COUNT 128
+const u8 sines[SIN_COUNT] = { 8,8,9,10,11,11,12,13,13,14,14,15,15,15,15,15,15,15,15,15,15,14,14,13,13,12,12,11,10,9,9,8,7,6,5,5,4,3,3,2,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,2,2,3,4,5,5,6,7,8,8,9,10,11,11,12,13,13,14,14,15,15,15,15,15,15,15,15,15,15,14,14,13,13,12,12,11,10,9,8,8,7,6,5,5,4,3,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,2,3,3,4,5,5,6,7 };
+const u8 *sin_bar_data = sines;
+u8 sin_bar_1_index = 17;
+u8 sin_bar_2_index = 0;
+u8 sin_bar_draw_line_y = 0;
+u8 sin_bar_draw_line_y2 = 0;
 
 const u16 tile1_index = 1;
 const u16 tile2_index = 2;
@@ -101,7 +108,7 @@ u16 rgbToU16(u8 r, u8 g, u8 b)
 }
 
 
-int main() {
+int sin_bar() {
 	// load tiles into VDP memory
 	VDP_loadTileData((const u32*)tile1, tile1_index, 1, 0);
 	VDP_loadTileData((const u32*)tile2, tile2_index, 1, 0);
@@ -140,69 +147,58 @@ int main() {
 	u16 old_col;
 	u8 palrow = 1;
 
-	u8 sin1_index = 17;
-	u8 sin2_index = 0;
+	sin_bar_1_index++;
+	sin_bar_2_index++;
 
-	u8 draw_line_y = 0;
-	u8 draw_line_y2 = 0;
+	if (sin_bar_1_index > SIN_COUNT)
+		sin_bar_1_index = 0;
+	if (sin_bar_2_index > SIN_COUNT)
+		sin_bar_2_index = 0;
 
-	while (1)
+	// Move color palettes up one row
+	old_col = palettes[1];
+	for (palrow = 1; palrow < 16; palrow++)
 	{
-		sin1_index++;
-		sin2_index++;
-
-		if (sin1_index > SIN_COUNT)
-			sin1_index = 0;
-		if (sin2_index > SIN_COUNT)
-			sin2_index = 0;
-
-		// Move color palettes up one row
-		old_col = palettes[1];
-		for (palrow = 1; palrow < 16; palrow++)
-		{
-			if (palrow < 15)
-				palettes[palrow] = palettes[palrow+1];
-			else
-				palettes[palrow] = old_col;
-
-			VDP_setPaletteColor(palrow, palettes[palrow]);
-		}
-
-		// Row where the tiles are placed
-		// This line is 8 * draw_line_y pixels
-		draw_line_y = SINDATA[sin1_index];
-		draw_line_y2 = SINDATA[sin2_index];
-
-		// Avoid drawing the black tile on top of the main effect
-		// as that causes a nasty blinking effect
-		if (draw_line_y2 > draw_line_y)
-		{
-			if (draw_line_y2 - draw_line_y < 4)
-				draw_line_y2 *= 2;
-		}
+		if (palrow < 15)
+			palettes[palrow] = palettes[palrow+1];
 		else
-		{
-			if (draw_line_y - draw_line_y2 < 4)
-				draw_line_y2 *= 2;
-		}
+			palettes[palrow] = old_col;
 
-		// Draw full screen width sized tiles that are 8 pixels high
-
-		// The first 4 draws clear 4 * 8 pixels of old data by drawing black over them
-		VDP_fillTileMapRect(PLAN_A, tile5_index, 0, draw_line_y2, 40, 1);
-		VDP_fillTileMapRect(PLAN_A, tile5_index, 0, draw_line_y2+1, 40, 1);
-		VDP_fillTileMapRect(PLAN_A, tile5_index, 0, draw_line_y2+2, 40, 1);
-		VDP_fillTileMapRect(PLAN_A, tile5_index, 0, draw_line_y2+3, 40, 1);	
-
-		// These draw the moving bar
-		VDP_fillTileMapRect(PLAN_A, tile1_index, 0, draw_line_y, 40, 1);
-		VDP_fillTileMapRect(PLAN_A, tile2_index, 0, draw_line_y+1, 40, 1);
-		VDP_fillTileMapRect(PLAN_A, tile3_index, 0, draw_line_y+2, 40, 1);
-		VDP_fillTileMapRect(PLAN_A, tile4_index, 0, draw_line_y+3, 40, 1);
-
-
-		VDP_waitVSync();
+		VDP_setPaletteColor(palrow, palettes[palrow]);
 	}
+
+	// Row where the tiles are placed
+	// This line is 8 * sin_bar_draw_line_y pixels
+	sin_bar_draw_line_y = sin_bar_data[sin_bar_1_index];
+	sin_bar_draw_line_y2 = sin_bar_data[sin_bar_2_index];
+
+	// Avoid drawing the black tile on top of the main effect
+	// as that causes a nasty blinking effect
+	if (sin_bar_draw_line_y2 > sin_bar_draw_line_y)
+	{
+		if (sin_bar_draw_line_y2 - sin_bar_draw_line_y < 4)
+			sin_bar_draw_line_y2 *= 2;
+	}
+	else
+	{
+		if (sin_bar_draw_line_y - sin_bar_draw_line_y2 < 4)
+			sin_bar_draw_line_y2 *= 2;
+	}
+
+	// Draw full screen width sized tiles that are 8 pixels high
+
+	// The first 4 draws clear 4 * 8 pixels of old data by drawing black over them
+	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+1, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+2, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+3, 40, 1);	
+
+	// These draw the moving bar
+	VDP_fillTileMapRect(PLAN_A, tile1_index, 0, sin_bar_draw_line_y, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile2_index, 0, sin_bar_draw_line_y+1, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile3_index, 0, sin_bar_draw_line_y+2, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile4_index, 0, sin_bar_draw_line_y+3, 40, 1);
+
 	return (0);
 }
 
