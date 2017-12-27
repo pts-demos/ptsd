@@ -147,13 +147,8 @@ int sin_bar() {
 	u16 old_col;
 	u8 palrow = 1;
 
-	sin_bar_1_index++;
-	sin_bar_2_index++;
-
-	if (sin_bar_1_index > SIN_COUNT)
-		sin_bar_1_index = 0;
-	if (sin_bar_2_index > SIN_COUNT)
-		sin_bar_2_index = 0;
+	sin_bar_1_index = (sin_bar_1_index + 1) % SIN_COUNT;
+	sin_bar_2_index = (sin_bar_2_index + 1) % SIN_COUNT;
 
 	// Move color palettes up one row
 	old_col = palettes[1];
