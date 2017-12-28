@@ -4,18 +4,24 @@
 
 // Load a pre-generated sine table
 #define SIN_COUNT 128
-const u8 sines[SIN_COUNT] = { 8,8,9,10,11,11,12,13,13,14,14,15,15,15,15,15,15,15,15,15,15,14,14,13,13,12,12,11,10,9,9,8,7,6,5,5,4,3,3,2,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,2,2,3,4,5,5,6,7,8,8,9,10,11,11,12,13,13,14,14,15,15,15,15,15,15,15,15,15,15,14,14,13,13,12,12,11,10,9,8,8,7,6,5,5,4,3,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,2,3,3,4,5,5,6,7 };
+const u8 sines[SIN_COUNT] = { 13,13,14,15,16,16,17,18,18,19,19,20,20,20,20,20,20,20,20,20,20,19,19,18,18,17,17,16,15,14,14,13,12,11,10,10,9,8,8,7,6,6,6,5,5,5,5,5,5,5,5,5,5,6,6,7,7,8,9,10,10,11,12,13,13,14,15,16,16,17,18,18,19,19,20,20,20,20,20,20,20,20,20,20,19,19,18,18,17,17,16,15,14,13,13,12,11,10,10,9,8,7,7,6,6,5,5,5,5,5,5,5,5,5,5,5,6,6,7,8,8,9,10,10,11,12 };
 const u8 *sin_bar_data = sines;
-u8 sin_bar_1_index = 17;
-u8 sin_bar_2_index = 0;
-u8 sin_bar_draw_line_y = 0;
-u8 sin_bar_draw_line_y2 = 0;
+u8 msg_xpos = 0;
 
 const u16 tile1_index = 1;
 const u16 tile2_index = 2;
 const u16 tile3_index = 3;
 const u16 tile4_index = 4;
 const u16 tile5_index = 5;
+
+char *greetz[] = {
+	"Oispa kaljaa",
+	"34C3",
+	"Arabuusimiehet",
+	"shadez",
+	'\0'
+};
+char **msg = greetz;
 
 // Create some tile buffers
 // each element in these arrays represents a color register value
@@ -107,8 +113,13 @@ u16 rgbToU16(u8 r, u8 g, u8 b)
     return out;
 }
 
+int
+sin_bar(void) {
+	static u8 sin_bar_1_index = 17;
+	static u8 sin_bar_2_index = 0;
+	static u8 sin_bar_draw_line_y = 0;
+	static u8 sin_bar_draw_line_y2 = 0;
 
-int sin_bar() {
 	// load tiles into VDP memory
 	VDP_loadTileData((const u32*)tile1, tile1_index, 1, 0);
 	VDP_loadTileData((const u32*)tile2, tile2_index, 1, 0);
@@ -186,7 +197,7 @@ int sin_bar() {
 	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2, 40, 1);
 	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+1, 40, 1);
 	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+2, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+3, 40, 1);	
+	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+3, 40, 1);
 
 	// These draw the moving bar
 	VDP_fillTileMapRect(PLAN_A, tile1_index, 0, sin_bar_draw_line_y, 40, 1);
@@ -194,6 +205,18 @@ int sin_bar() {
 	VDP_fillTileMapRect(PLAN_A, tile3_index, 0, sin_bar_draw_line_y+2, 40, 1);
 	VDP_fillTileMapRect(PLAN_A, tile4_index, 0, sin_bar_draw_line_y+3, 40, 1);
 
+	VDP_setTextPlan(PLAN_B);
+	VDP_setTextPalette(3);
+	if (sin_bar_2_index % 16 == 0)
+		msg_xpos = (msg_xpos + 1) % 40;
+	if (sin_bar_2_index == 127) {
+		msg++;
+		if (!*msg)
+			msg = greetz;
+	}
+	VDP_drawText(*msg, msg_xpos, sin_bar_draw_line_y+1);
+	VDP_waitVSync();
+	VDP_clearText(msg_xpos, sin_bar_draw_line_y+1, 40);
 	return (0);
 }
 
