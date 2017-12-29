@@ -2,7 +2,7 @@
 #include <vdp.h>
 #include "sin_bar.h"
 
-// Load a pre-generated sine table
+/* utils/generate_sin 60 5 20 */
 const u8 sines[] = { 12,12,13,14,14,15,16,16,17,17,18,18,18,18,18,19,18,18,18,18,18,17,17,16,16,15,14,14,13,12,12,11,10,9,9,8,7,7,6,6,5,5,5,5,5,5,5,5,5,5,5,6,6,7,7,8,9,9,10,11 };
 #define SIN_COUNT (sizeof(sines) / sizeof(sines[0]))
 u8 msg_xpos = 0;
