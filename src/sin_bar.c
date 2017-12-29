@@ -3,9 +3,8 @@
 #include "sin_bar.h"
 
 // Load a pre-generated sine table
-#define SIN_COUNT 128
-const u8 sines[SIN_COUNT] = { 13,13,14,15,16,16,17,18,18,19,19,20,20,20,20,20,20,20,20,20,20,19,19,18,18,17,17,16,15,14,14,13,12,11,10,10,9,8,8,7,6,6,6,5,5,5,5,5,5,5,5,5,5,6,6,7,7,8,9,10,10,11,12,13,13,14,15,16,16,17,18,18,19,19,20,20,20,20,20,20,20,20,20,20,19,19,18,18,17,17,16,15,14,13,13,12,11,10,10,9,8,7,7,6,6,5,5,5,5,5,5,5,5,5,5,5,6,6,7,8,8,9,10,10,11,12 };
-const u8 *sin_bar_data = sines;
+const u8 sines[] = { 12,12,13,14,14,15,16,16,17,17,18,18,18,18,18,19,18,18,18,18,18,17,17,16,16,15,14,14,13,12,12,11,10,9,9,8,7,7,6,6,5,5,5,5,5,5,5,5,5,5,5,6,6,7,7,8,9,9,10,11 };
+#define SIN_COUNT (sizeof(sines) / sizeof(sines[0]))
 u8 msg_xpos = 0;
 
 const u16 tile1_index = 1;
@@ -175,8 +174,8 @@ sin_bar(void) {
 
 	// Row where the tiles are placed
 	// This line is 8 * sin_bar_draw_line_y pixels
-	sin_bar_draw_line_y = sin_bar_data[sin_bar_1_index];
-	sin_bar_draw_line_y2 = sin_bar_data[sin_bar_2_index];
+	sin_bar_draw_line_y = sines[sin_bar_1_index] % SIN_COUNT;
+	sin_bar_draw_line_y2 = sines[sin_bar_2_index] % SIN_COUNT;
 
 	// Avoid drawing the black tile on top of the main effect
 	// as that causes a nasty blinking effect
