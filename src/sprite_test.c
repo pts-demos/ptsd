@@ -47,10 +47,7 @@ void init_sprite_test(void)
 	sanic_pos_x = 0;
 	sanic_pos_y = 0;
 
-	//
 	VDP_setPalette(PAL0, sanic_sprite.palette->data);
-	VDP_setPalette(PAL1, palette_red);
-	VDP_setTextPalette(PAL1);
 }
 
 int sprite_test(void)
