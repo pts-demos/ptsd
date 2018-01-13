@@ -43,8 +43,7 @@ void init_sprite_test(void)
 	SYS_enableInts();
 
 	// Init sanic
-	sprites[0] =
-		SPR_addSprite(&sanic_sprite, 0, 0, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	sprites[0] = SPR_addSprite(&sanic_sprite, 0, 0, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	sanic_pos_x = 0;
 	sanic_pos_y = 0;
 
