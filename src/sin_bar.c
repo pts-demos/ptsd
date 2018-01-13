@@ -112,13 +112,11 @@ u16 rgbToU16(u8 r, u8 g, u8 b)
     return out;
 }
 
-int
-sin_bar(void) {
-	static u8 sin_bar_1_index = 17;
-	static u8 sin_bar_2_index = 0;
-	static u8 sin_bar_draw_line_y = 0;
-	static u8 sin_bar_draw_line_y2 = 0;
+u16 sin_bar_palettes[17];
 
+void
+sin_bar_init(void)
+{
 	// load tiles into VDP memory
 	VDP_loadTileData((const u32*)tile1, tile1_index, 1, 0);
 	VDP_loadTileData((const u32*)tile2, tile2_index, 1, 0);
@@ -129,8 +127,6 @@ sin_bar(void) {
 	u8 r = 0;
 	u8 g = 0;
 	u8 b = 0;
-
-	u16 palettes[17];
 
 	// Create a gradient color palette
 	for (int i = 1; i < 16; i++)
@@ -151,71 +147,71 @@ sin_bar(void) {
 
 		// Pre-set these colors in the VDP color ram
 		VDP_setPaletteColor(i, vdp_col);
-		palettes[i] = vdp_col;
+		sin_bar_palettes[i] = vdp_col;
 	}
+}
+
+int
+sin_bar(void) {
+	static u8 head_idx = 4;
+	static u8 tail_idx = 0;
+	static u8 bar_head_y = 0;
+	static u8 bar_tail_y = 0;
 
 	u16 old_col;
-	u8 palrow = 1;
 
-	sin_bar_1_index = (sin_bar_1_index + 1) % SIN_COUNT;
-	sin_bar_2_index = (sin_bar_2_index + 1) % SIN_COUNT;
+	head_idx = (head_idx + 1) % SIN_COUNT;
+	tail_idx = (tail_idx + 1) % SIN_COUNT;
 
-	// Move color palettes up one row
-	old_col = palettes[1];
-	for (palrow = 1; palrow < 16; palrow++)
+	/* Move color palettes up one row */
+	old_col = sin_bar_palettes[1];
+	for (u8 palrow = 1; palrow < 16; palrow++)
 	{
 		if (palrow < 15)
-			palettes[palrow] = palettes[palrow+1];
+			sin_bar_palettes[palrow] = sin_bar_palettes[palrow+1];
 		else
-			palettes[palrow] = old_col;
+			sin_bar_palettes[palrow] = old_col;
 
-		VDP_setPaletteColor(palrow, palettes[palrow]);
+		VDP_setPaletteColor(palrow, sin_bar_palettes[palrow]);
 	}
 
-	// Row where the tiles are placed
-	// This line is 8 * sin_bar_draw_line_y pixels
-	sin_bar_draw_line_y = sines[sin_bar_1_index] % SIN_COUNT;
-	sin_bar_draw_line_y2 = sines[sin_bar_2_index] % SIN_COUNT;
+	u8 old_tail = bar_tail_y;
+	bar_head_y = sines[head_idx];
+	bar_tail_y = sines[tail_idx];
 
-	// Avoid drawing the black tile on top of the main effect
-	// as that causes a nasty blinking effect
-	if (sin_bar_draw_line_y2 > sin_bar_draw_line_y)
-	{
-		if (sin_bar_draw_line_y2 - sin_bar_draw_line_y < 4)
-			sin_bar_draw_line_y2 *= 2;
-	}
-	else
-	{
-		if (sin_bar_draw_line_y - sin_bar_draw_line_y2 < 4)
-			sin_bar_draw_line_y2 *= 2;
-	}
+	/*
+	 * Clear the trail. If our tail is moving downward, clear the topmost
+	 * line of the bar; if moving upward, clear the bottom line (top+3). If
+	 * the tail is not moving do not clear anything.
+	 */
+	if (old_tail < bar_tail_y)
+		VDP_fillTileMapRect(PLAN_A, tile5_index, 0,
+		    old_tail, 40, 1);
+	else if (old_tail > bar_tail_y)
+		VDP_fillTileMapRect(PLAN_A, tile5_index, 0,
+		    old_tail+3, 40, 1);
 
-	// Draw full screen width sized tiles that are 8 pixels high
-
-	// The first 4 draws clear 4 * 8 pixels of old data by drawing black over them
-	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+1, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+2, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile5_index, 0, sin_bar_draw_line_y2+3, 40, 1);
-
-	// These draw the moving bar
-	VDP_fillTileMapRect(PLAN_A, tile1_index, 0, sin_bar_draw_line_y, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile2_index, 0, sin_bar_draw_line_y+1, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile3_index, 0, sin_bar_draw_line_y+2, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile4_index, 0, sin_bar_draw_line_y+3, 40, 1);
+	/*
+	 * Draw the bar. Each tile is 8*8px and composes a fourth of the height
+	 * of the bar, and we draw them across the entire screen width (ie.
+	 * 40*8 pixels)
+	 */
+	VDP_fillTileMapRect(PLAN_A, tile1_index, 0, bar_head_y, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile2_index, 0, bar_head_y+1, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile3_index, 0, bar_head_y+2, 40, 1);
+	VDP_fillTileMapRect(PLAN_A, tile4_index, 0, bar_head_y+3, 40, 1);
 
 	VDP_setTextPlan(PLAN_B);
 	VDP_setTextPalette(3);
-	if (sin_bar_2_index % 16 == 0)
+	if (tail_idx % 16 == 0)
 		msg_xpos = (msg_xpos + 1) % 40;
-	if (sin_bar_2_index == 127) {
+	if (tail_idx == SIN_COUNT-1) {
 		msg++;
 		if (!*msg)
 			msg = greetz;
 	}
-	VDP_drawText(*msg, msg_xpos, sin_bar_draw_line_y+1);
+	VDP_drawText(*msg, msg_xpos, bar_head_y+1);
 	VDP_waitVSync();
-	VDP_clearText(msg_xpos, sin_bar_draw_line_y+1, 40);
+	VDP_clearText(msg_xpos, bar_head_y+1, 40);
 	return (0);
 }
-
