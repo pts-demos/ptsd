@@ -97,3 +97,11 @@ int sprite_test(void)
 	VDP_waitVSync();
 	return (0);
 }
+
+int end_sprite_test(void)
+{
+    SYS_disableInts();
+    SPR_end();
+    SYS_enableInts();
+    return (0);
+}
