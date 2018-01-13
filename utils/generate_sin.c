@@ -3,6 +3,7 @@
  * example:
  *	$ ./generate_sin 20 1 10 | paste -sd, -
  *	5,6,7,8,8,9,8,8,7,6,5,3,2,1,1,1,1,1,2,3
+ *	$ ./generate_cos 20 1 10 | paste -sd, -
  */
 
 #include <stdio.h>
@@ -18,8 +19,12 @@ int main(int argc, char **argv)
 {
 	char *outfile;
 	long values[3];
+	const char *prog = getprogname();
+	double (*fun)(double) = sin;
 	if (argc != 4)
-		errx(1, "usage: generate_sin count min max\n");
+		errx(1, "usage: %s count min max", prog);
+	if (strcmp(prog, "generate_cos") == 0)
+		fun = cos;
 
 	for (int i = 0; i < argc - 1; i++) {
 		char *ep;
@@ -44,9 +49,9 @@ int main(int argc, char **argv)
 
 	for (unsigned long i = 0; i < count; i++) {
 		double sn = (double) i / count * 2*M_PI;
-		/* adjust the sine value to [0,2] before scaling */
-		long sinval = minval + (1 + sin(sn)) * scale;
-		printf("%ld\n", sinval);
+		/* adjust the value to [0,2] before scaling */
+		long val = minval + (1 + fun(sn)) * scale;
+		printf("%ld\n", val);
 	}
 
 	return 0;

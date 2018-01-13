@@ -3,10 +3,9 @@
 #include "sin_bar.h"
 #include "timer.h"
 
-/* utils/generate_sin 60 5 20 */
-const u8 sines[] = { 12,12,13,14,14,15,16,16,17,17,18,18,18,18,18,19,18,18,18,18,18,17,17,16,16,15,14,14,13,12,12,11,10,9,9,8,7,7,6,6,5,5,5,5,5,5,5,5,5,5,5,6,6,7,7,8,9,9,10,11 };
+/* utils/generate_sin 200 0 27 */
+const u8 sines[] = { 13,13,13,14,14,15,15,15,16,16,17,17,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,23,23,24,24,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,26,25,25,25,25,25,25,25,25,25,25,25,25,24,24,24,24,24,23,23,23,23,23,22,22,22,21,21,21,20,20,20,19,19,19,18,18,18,17,17,17,16,16,15,15,15,14,14,13,13,13,12,12,11,11,10,10,10,9,9,8,8,8,7,7,7,6,6,6,5,5,5,4,4,4,3,3,3,2,2,2,2,2,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,9,9,10,10,10,11,11,12,12 };
 #define SIN_COUNT (sizeof(sines) / sizeof(sines[0]))
-u8 msg_xpos = 0;
 
 const u16 tile1_index = 1;
 const u16 tile2_index = 2;
@@ -159,6 +158,7 @@ sin_bar(void) {
 	static u8 tail_idx = 0;
 	static u8 bar_head_y = 0;
 	static u8 bar_tail_y = 0;
+	static s16 msg_scrolloffset = 0;
 
 	u16 old_col;
 
@@ -204,16 +204,19 @@ sin_bar(void) {
 	VDP_fillTileMapRect(PLAN_A, tile4_index, 0, bar_head_y+3, 40, 1);
 
 	VDP_setTextPlan(PLAN_B);
-	VDP_setTextPalette(3);
-	if (getTick() % (TICKPERSECOND / 20) == 0)
-		msg_xpos = (msg_xpos + 1) % 40;
-	if (getTick() % (TICKPERSECOND * 25/10) == 0) {
+	msg_scrolloffset += 2;
+	/* once we've scrolled the entire message offscreen, wrap & change
+	 * message */
+	if (msg_scrolloffset > VDP_getScreenWidth() + 8*strlen(*msg)) {
+		msg_scrolloffset = 0;
 		msg++;
 		if (!*msg)
 			msg = greetz;
 	}
-	VDP_drawText(*msg, msg_xpos, bar_head_y+1);
+	VDP_setHorizontalScroll(PLAN_B, VDP_getScreenWidth()-msg_scrolloffset);
+	VDP_setTextPalette(3);
+	VDP_drawText(*msg, 0, bar_head_y+1);
 	VDP_waitVSync();
-	VDP_clearText(msg_xpos, bar_head_y+1, 40);
+	VDP_clearText(0, bar_head_y+1, 40);
 	return (0);
 }
