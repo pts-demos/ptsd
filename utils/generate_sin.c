@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 	char *outfile;
 	long values[3];
 	if (argc != 4)
-		errx(1, "usage: generate_sin count min max\n");
+		errx(1, "usage: generate_sin count min max");
 
 	for (int i = 0; i < argc - 1; i++) {
 		char *ep;
