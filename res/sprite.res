@@ -1,1 +1,1 @@
-SPRITE sanic_sprite "sprite/sonic.png" 6 6 FAST 5
+SPRITE sanic_sprite "sprite/sonic.png" 6 6 NONE 5

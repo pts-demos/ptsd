@@ -3,6 +3,8 @@
 #include "sprite_test.h"
 #include "sprite.h"
 
+#define SANIC_AMOUNT 18
+
 /**
  * Sample main:
  * 
@@ -19,13 +21,13 @@ int main(void)
 }
 */
 
-Sprite *sprites[10];
-int sanic_pos_x[10];
-int sanic_pos_y[10];
-int x_direction[10];
-int y_direction[10];
-int sanic_speeds[10];
-int current_animation[10];
+Sprite *sprites[SANIC_AMOUNT];
+int sanic_pos_x[SANIC_AMOUNT];
+int sanic_pos_y[SANIC_AMOUNT];
+int x_direction[SANIC_AMOUNT];
+int y_direction[SANIC_AMOUNT];
+int sanic_speeds[SANIC_AMOUNT];
+int current_animation[SANIC_AMOUNT];
 
 void init_sprite_test(void)
 {
@@ -36,7 +38,7 @@ void init_sprite_test(void)
 	VDP_setScreenWidth320();
 
 	// init sprites engine
-	SPR_init(10, 512, 512);
+	SPR_init(SANIC_AMOUNT, 768, 768);
 
 	// set all palette to black
 	VDP_setPaletteColors(0, (u16 *)palette_black, 64);
@@ -45,10 +47,10 @@ void init_sprite_test(void)
 	SYS_enableInts();
 
 	// Init sanics
-    for(int i = 0; i < 10; i++){
-        sprites[i] = SPR_addSprite(&sanic_sprite, 0 + i * 10, 0 + i * 10, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-        sanic_pos_x[i] = i + 15 * i;
-        sanic_pos_y[i] = i + 12 * i;
+    for(int i = 0; i < SANIC_AMOUNT; i++){
+        sprites[i] = SPR_addSprite(&sanic_sprite, 0 + i * 5, 0 + i * 5, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+        sanic_pos_x[i] = i + 8 * i;
+        sanic_pos_y[i] = i + 6 * i;
         if(i % 2 == 0 ){
             x_direction[i] = 1;
             y_direction[i] = 1;
@@ -60,10 +62,7 @@ void init_sprite_test(void)
         
         sanic_speeds[i] = i + 1;
         
-        current_animation[i] = i;
-        if(current_animation[i] > 7) {
-            current_animation[i] -= 8;
-        }
+        current_animation[i] = i % 7;
         SPR_setAnim(sprites[i], current_animation[i]);
     }
 
@@ -72,7 +71,7 @@ void init_sprite_test(void)
 
 int sprite_test(void)
 {
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < SANIC_AMOUNT; i++){
         sanic_pos_x[i] += x_direction[i] * sanic_speeds[i];
         sanic_pos_y[i] += y_direction[i] * sanic_speeds[i];
         SPR_setPosition(sprites[i], sanic_pos_x[i], sanic_pos_y[i]);
