@@ -22,22 +22,22 @@ struct rom_header {
 };
 
 const struct rom_header rom_header = {
-	.console = "SEGA MEGA DRIVE ",
-	.copyright = "(C) PTS    2013 ",
-	.title_local = "DEMON NIMI TAHAN                                ",
-	.title_int = "DEMON NIMI TAHAN                                ",
+	.console = "SEGA MEGA DRIVE",
+	.copyright = "(C) PTS    2013",
+	.title_local = "DEMON NIMI TAHAN",
+	.title_int = "DEMON NIMI TAHAN",
 	.serial = "GM 00000000-00",
 	.checksum = 0x0000,
-	.IOSupport = "JD              ",
+	.IOSupport = "JD",
 	.rom_start = 0x00000000,
 	.rom_end = 0x00100000,
 	.ram_start = 0x00FF0000,
 	.ram_end = 0x00FFFFFF,
-	.sram_sig = "  ",
+	.sram_sig = "",
 	.sram_type = 0x0000,
 	.sram_start = 0x00200000,
 	.sram_end = 0x002001FF,
-	.modem_support = "            ",
-	.notes = "DEMONSTRATION PROGRAM                   ",
-	.region = "JUE             "
+	.modem_support = "",
+	.notes = "DEMONSTRATION PROGRAM",
+	.region = "E"
 };
