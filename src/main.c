@@ -1,16 +1,14 @@
 #include <genesis.h>
-#include "sin_bar.h"
-#include "music.h"
+#include "interrupt_test.h"
 #include "z80_ctrl.h"
 
 int main(void)
 {
 	VDP_setScreenHeight240();
 	PSG_init();
-	SND_startPlay_VGM(sonic1);
-	sin_bar_init();
+	init_interrupt_test();
 	while (1) {
-		sin_bar();
+		interrupt_test();
 	}
 	return (0);
 }
