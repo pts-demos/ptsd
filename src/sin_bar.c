@@ -152,7 +152,7 @@ sin_bar_init(void)
 	}
 }
 
-int
+void
 sin_bar(void) {
 	static u8 head_idx = 4;
 	static u8 tail_idx = 0;
@@ -218,5 +218,4 @@ sin_bar(void) {
 	VDP_drawText(*msg, 0, bar_head_y+1);
 	VDP_waitVSync();
 	VDP_clearText(0, bar_head_y+1, 40);
-	return (0);
 }
