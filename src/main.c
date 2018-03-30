@@ -1,8 +1,8 @@
 #include <genesis.h>
 #include <timer.h>
-#include <music.h>
 #include <z80_ctrl.h>
 #include <joy.h>
+#include "music.h"
 #include "sin_bar.h"
 #include "cryptopts.h"
 #include "scroll.h"
