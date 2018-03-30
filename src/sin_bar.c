@@ -11,7 +11,6 @@ const u16 tile1_index = 1;
 const u16 tile2_index = 2;
 const u16 tile3_index = 3;
 const u16 tile4_index = 4;
-const u16 tile5_index = 5;
 
 char *greetz[] = {
 	"Oispa kaljaa",
@@ -75,18 +74,6 @@ u32 tile4[8] = {
 	0x11111111,
 };
 
-// A tile for clearing parts of the screen
-u32 tile5[8] = {
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00000000
-};
-
 /**
   * Converts RGB color values into a single u16 color
   * as supported by the VDP color ram
@@ -123,7 +110,6 @@ sin_bar_init(void)
 	VDP_loadTileData((const u32*)tile2, tile2_index, 1, 0);
 	VDP_loadTileData((const u32*)tile3, tile3_index, 1, 0);
 	VDP_loadTileData((const u32*)tile4, tile4_index, 1, 0);
-	VDP_loadTileData((const u32*)tile5, tile5_index, 1, 0);
 
 	u8 r = 0;
 	u8 g = 0;
@@ -187,11 +173,9 @@ sin_bar(void) {
 	 * the tail is not moving do not clear anything.
 	 */
 	if (old_tail < bar_tail_y)
-		VDP_fillTileMapRect(PLAN_A, tile5_index, 0,
-		    old_tail, 40, 1);
+		VDP_clearTileMapRect(PLAN_A, 0, old_tail, 40, 1);
 	else if (old_tail > bar_tail_y)
-		VDP_fillTileMapRect(PLAN_A, tile5_index, 0,
-		    old_tail+3, 40, 1);
+		VDP_clearTileMapRect(PLAN_A, 0, old_tail+3, 40, 1);
 
 	/*
 	 * Draw the bar. Each tile is 8*8px and composes a fourth of the height

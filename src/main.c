@@ -9,19 +9,20 @@
 #include "wave1.h"
 #include "rotating_patterns.h"
 #include "effectswitcher.h"
+#include "transitions.h"
 #include "interrupt_test.h"
 
 struct effect effects[] = {
-    // render func, init func, duration in seconds
-	{ sin_bar, sin_bar_init, 2 },
-	{interrupt_test, init_interrupt_test, 5},
-	{ wave1, wave1_init, 12 },
+	/* render func, init func, transition, duration (sec) */
+	{ sin_bar, sin_bar_init, fade_to_black, 8 },
+	{ wave1, wave1_init, fade_to_black, 12 },
+	{ interrupt_test, init_interrupt_test, fade_to_black, 6},
 	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
 	 * sin_bar(), sin_bar() bugs */
-	{ scroll, scroll_init, 15 },
-	{ rotating_patterns, rotating_patterns_init, 15 },
-	{ crypto_pts, crypto_pts_init, 0 },
-	{ NULL, NULL, 0 },
+	{ scroll, scroll_init, fade_to_black, 15 },
+	{ rotating_patterns, rotating_patterns_init, wipe_screen, 15 },
+	{ crypto_pts, crypto_pts_init, fade_to_black, 0 },
+	{ NULL, NULL, NULL, 0 },
 };
 
 void
