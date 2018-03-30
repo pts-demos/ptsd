@@ -2,7 +2,7 @@
 #define FULLSCREEN_H_
 
 void rotating_patterns_init(void);
-int rotating_patterns(void);
+void rotating_patterns(void);
 
 #endif
 

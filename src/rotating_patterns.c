@@ -4,7 +4,7 @@
 #include "timer.h"
 #include "owb_sin.h"
 
-void load_image(const u8*, VDPPlan);
+void load_patterns_image(const u8*, VDPPlan);
 
 // Resolution in 8x8 pixel tiles
 #define width 80 
@@ -138,8 +138,8 @@ rotating_patterns_init(void)
 		}
 	}
 
-	load_image(tilemap_a, PLAN_A);
-	load_image(tilemap_b, PLAN_B);
+	load_patterns_image(tilemap_a, PLAN_A);
+	load_patterns_image(tilemap_b, PLAN_B);
 }
 
 void
@@ -148,7 +148,7 @@ set_palette(u8 palette_index) {
     VDP_setPaletteColor(2, colors[palette_index+1]);
 }
 
-int
+void
 rotating_patterns(void) {
 	static int color_flash_time = 0;
     static u8 color_flash_fade = 0;
@@ -204,10 +204,9 @@ rotating_patterns(void) {
 	VDP_setHorizontalScroll(PLAN_B, cos(scroll_counter));
 
 	VDP_waitVSync();
-	return 0;
 }
 
-void load_image(const u8* src, VDPPlan plan) {
+void load_patterns_image(const u8* src, VDPPlan plan) {
 	static u16 temp[width * height];
 
 	int x, y;
