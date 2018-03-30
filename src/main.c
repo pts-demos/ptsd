@@ -2,6 +2,8 @@
 #include "sin_bar.h"
 #include "music.h"
 #include "z80_ctrl.h"
+#include "cryptopts.h"
+#include "timer.h"
 
 int main(void)
 {
@@ -9,8 +11,10 @@ int main(void)
 	PSG_init();
 	SND_startPlay_VGM(sonic1);
 	sin_bar_init();
-	while (1) {
+	while (getTick() < 300*10)
 		sin_bar();
-	}
+	/* FIXME crypto_pts never exits */
+	while (getTick() < 300*30)
+		crypto_pts();
 	return (0);
 }
