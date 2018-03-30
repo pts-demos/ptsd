@@ -42,6 +42,7 @@ int sine_table[] = {
 void h_interrupt_cb(void){
     if(scanline_number > 76 + sine_table[sine_wave]){
         current_scroll -= 7;
+        VDP_setVerticalScroll(PLAN_A, total_scroll + current_scroll);
     }
     
     if(scanline_number > 76 && scanline_number%2 == 0){
@@ -49,7 +50,7 @@ void h_interrupt_cb(void){
     } else if(scanline_number > 76 && scanline_number%2 == 1){
         VDP_setHorizontalScroll(PLAN_A, -sine_table[sine_ripple]);        
     }
-    VDP_setVerticalScroll(PLAN_A, current_scroll);
+    
     scanline_number++;
     if(++sine_factor_wave > 70){
         sine_factor_wave = 0;
@@ -89,7 +90,7 @@ int interrupt_test(void)
 	VDP_waitVSync();
     current_scroll = 0;
     scanline_number = 0;
-    VDP_setVerticalScroll(PLAN_A, 0);
+    VDP_setVerticalScroll(PLAN_A, total_scroll);
     VDP_setHorizontalScroll(PLAN_A, 0);
 	return (0);
 }
