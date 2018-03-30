@@ -5,25 +5,66 @@
 
 int current_scroll = 0;
 int scanline_number = 0;
+int sine_counter = 0;
+int sine_factor_wave = 0;
+int sine_factor_ripple = 0;
+int sine_wave = 0;
+int sine_ripple = 0;
+int total_scroll = 0;
+
+int sine_table[] = {
+    2,2,2,2,2,2,2,2,
+    2,2,2,2,2,2,2,2,
+    2,2,2,2,2,3,3,3,
+    3,3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,3,
+    3,3,3,3,3,3,2,2,
+    2,2,2,2,2,2,2,2,
+    2,2,2,2,2,2,2,2,
+    2,2,2,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,
+    1,1,1,1,2
+};
+#define SINE_COUNT (sizeof(sine_table) / sizeof(sine_table[0]))
 
 void h_interrupt_cb(void){
-    if(scanline_number > 70){
-        current_scroll -= 4;
-        if(scanline_number%2 == 0){
-            VDP_setHorizontalScroll(PLAN_WINDOW, 2);
-        } else {
-            VDP_setHorizontalScroll(PLAN_WINDOW, -2);        
-        }
+    if(scanline_number > 76 + sine_table[sine_wave]){
+        current_scroll -= 7;
     }
-    VDP_setVerticalScroll(PLAN_WINDOW, current_scroll);
+    
+    if(scanline_number > 76 && scanline_number%2 == 0){
+        VDP_setHorizontalScroll(PLAN_A, sine_table[sine_ripple]);
+    } else if(scanline_number > 76 && scanline_number%2 == 1){
+        VDP_setHorizontalScroll(PLAN_A, -sine_table[sine_ripple]);        
+    }
+    VDP_setVerticalScroll(PLAN_A, current_scroll);
     scanline_number++;
+    if(++sine_factor_wave > 70){
+        sine_factor_wave = 0;
+        if(++sine_wave >= SINE_COUNT){
+            sine_wave = 0;
+        } 
+    }
+    if(++sine_factor_ripple > 120){
+        sine_factor_ripple = 0;
+        if(++sine_ripple >= SINE_COUNT){
+            sine_ripple = 0;
+        } 
+    }
 }
 
-void v_interrupt_cb(void){
-    VDP_setVerticalScroll(PLAN_WINDOW, 0);
-    current_scroll = 0;
-    scanline_number = 0;
-}
 
 void init_interrupt_test(void)
 {
@@ -34,12 +75,10 @@ void init_interrupt_test(void)
 
     VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
     SYS_setHIntCallback(h_interrupt_cb);
-    SYS_setVIntCallback(v_interrupt_cb);
     VDP_setHInterrupt(TRUE);
 
     int ind = TILE_USERINDEX;
     VDP_drawImageEx(PLAN_A, &bga_image, TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, ind), 0, 0, FALSE, TRUE);
-    ind += bga_image.tileset->numTile;
     VDP_setPalette(PAL1, bga_image.palette->data);
 
     SYS_enableInts();
@@ -48,6 +87,10 @@ void init_interrupt_test(void)
 int interrupt_test(void)
 {
 	VDP_waitVSync();
+    current_scroll = 0;
+    scanline_number = 0;
+    VDP_setVerticalScroll(PLAN_A, 0);
+    VDP_setHorizontalScroll(PLAN_A, 0);
 	return (0);
 }
 
