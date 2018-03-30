@@ -1,8 +1,8 @@
 #include <genesis.h>
 #include <timer.h>
-#include <music.h>
 #include <z80_ctrl.h>
 #include <joy.h>
+#include "music.h"
 #include "sin_bar.h"
 #include "cryptopts.h"
 #include "scroll.h"
@@ -18,8 +18,7 @@ struct effect effects[] = {
 	 * sin_bar(), sin_bar() bugs */
 	{ scroll, scroll_init, 15 },
 	{ rotating_pattern, _init, 15 },
-	/* FIXME crypto_pts never exits */
-	{ crypto_pts, NULL, 0 },
+	{ crypto_pts, crypto_pts_init, 0 },
 	{ NULL, NULL, 0 },
 };
 
