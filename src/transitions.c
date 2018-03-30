@@ -27,10 +27,6 @@ clear_screen(void)
 {
 	VDP_clearSprites();
 	VDP_resetScreen();
-	VDP_setVerticalScroll(PLAN_A, 0);
-	VDP_setVerticalScroll(PLAN_B, 0);
-	VDP_setHorizontalScroll(PLAN_A, 0);
-	VDP_setHorizontalScroll(PLAN_B, 0);
 	VDP_setHInterrupt(0);
 }
 
