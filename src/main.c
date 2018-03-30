@@ -7,14 +7,17 @@
 #include "cryptopts.h"
 #include "scroll.h"
 #include "wave1.h"
+#include "rotating_pattern.h"
 #include "effectswitcher.h"
 
 struct effect effects[] = {
+    // render func, init func, duration in seconds
 	{ sin_bar, sin_bar_init, 8 },
 	{ wave1, wave1_init, 12 },
 	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
 	 * sin_bar(), sin_bar() bugs */
 	{ scroll, scroll_init, 15 },
+	{ rotating_pattern, _init, 15 },
 	/* FIXME crypto_pts never exits */
 	{ crypto_pts, NULL, 0 },
 	{ NULL, NULL, 0 },
