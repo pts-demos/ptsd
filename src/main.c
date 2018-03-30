@@ -7,7 +7,7 @@
 #include "cryptopts.h"
 #include "scroll.h"
 #include "wave1.h"
-#include "rotating_pattern.h"
+#include "rotating_patterns.h"
 #include "effectswitcher.h"
 
 struct effect effects[] = {
@@ -17,7 +17,7 @@ struct effect effects[] = {
 	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
 	 * sin_bar(), sin_bar() bugs */
 	{ scroll, scroll_init, 15 },
-	{ rotating_pattern, _init, 15 },
+	{ rotating_patterns, rotating_patterns_init, 15 },
 	{ crypto_pts, crypto_pts_init, 0 },
 	{ NULL, NULL, 0 },
 };
