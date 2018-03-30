@@ -15,8 +15,7 @@ struct effect effects[] = {
 	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
 	 * sin_bar(), sin_bar() bugs */
 	{ scroll, scroll_init, 15 },
-	/* FIXME crypto_pts never exits */
-	{ crypto_pts, NULL, 0 },
+	{ crypto_pts, crypto_pts_init, 0 },
 	{ NULL, NULL, 0 },
 };
 
