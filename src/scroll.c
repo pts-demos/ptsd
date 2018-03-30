@@ -65,7 +65,7 @@ u8 tilebuffer[8 * 4];
 s16 target_line = 0;
 u8 dir = 1;
 
-int
+void
 scroll(void) {
 	static s16 scroll_count = 0;
 	const s16 change_interval = 3;
@@ -124,6 +124,5 @@ scroll(void) {
 
 	VDP_setHorizontalScroll(PLAN_A, scroll_count);
 	VDP_waitVSync();
-	return (0);
 }
 

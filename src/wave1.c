@@ -47,7 +47,8 @@ u16 distance = 0;
 // Tile 0 is backgroud, so start indexing at 1
 u16 tileIndex = 1;
 
-int wave1_init()
+void
+wave1_init(void)
 {
     VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
 
@@ -84,7 +85,6 @@ int wave1_init()
             tileIndex++;
         }
     }
-    return 0;
 }
 
 void
