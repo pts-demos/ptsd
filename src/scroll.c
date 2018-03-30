@@ -3,31 +3,7 @@
 #include "scroll.h"
 #include "timer.h"
 
-/**
-  * Converts RGB color values into a single u16 color
-  * as supported by the VDP color ram
-  * r, g and b must be less than 8
-  */
-u16 rgbToU16(u8 r, u8 g, u8 b)
-{
-    // There are 64 * 9 bits of color ram on chip
-    // They are accessed as 64 16-bit words
-    // each word has the format:
-    // ----bbb-ggg-rrr-
-    // r = red component
-    // g = green component
-    // b = blue component
-    // as each channel has 3 bits of information, each of them can have 8 unique values (0-7)
-    // 8 * 8 * 8 = 512 possible colors
-
-    if (r > 7 || g > 7 || b > 7) {
-        return 0;
-    }
-
-    u16 out = 0;
-    out += (b << 9) + (g << 5) + (r << 1);
-    return out;
-}
+extern u16 rgbToU16(u8 r, u8 g, u8 b);
 
 void
 scroll_init(void)
