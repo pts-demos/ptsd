@@ -1,0 +1,1 @@
+IMAGE bga_image "gfx/bga.png" BEST

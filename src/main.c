@@ -9,10 +9,12 @@
 #include "wave1.h"
 #include "rotating_patterns.h"
 #include "effectswitcher.h"
+#include "interrupt_test.h"
 
 struct effect effects[] = {
     // render func, init func, duration in seconds
-	{ sin_bar, sin_bar_init, 8 },
+	{ sin_bar, sin_bar_init, 2 },
+	{interrupt_test, init_interrupt_test, 5},
 	{ wave1, wave1_init, 12 },
 	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
 	 * sin_bar(), sin_bar() bugs */
