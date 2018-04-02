@@ -1,1 +1,1 @@
-IMAGE bga_image "gfx/bga.png" BEST
+IMAGE bga_image "gfx/bga.png" NONE
