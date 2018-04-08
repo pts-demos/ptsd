@@ -40,7 +40,7 @@ main(void)
 	VDP_setScreenHeight240();
 	PSG_init();
 	JOY_init();
-	SND_startPlay_VGM(sonic1);
+	SND_startPlay_VGM(pts_1989);
 	JOY_setEventHandler(joy_cb);
 	effects_init();
 	while (1)
