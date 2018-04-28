@@ -19,6 +19,7 @@ int ukk_y_pos_counter = 0;
 int bobbing_counter = 0;
 int descent_began = FALSE;
 int bobbing_limit = 5;
+int background_scroll = 0;
 
 int ripple_sine_table[] = {
     2,2,2,2,2,2,2,2,
@@ -170,13 +171,17 @@ void h_interrupt_cb(void){
 
     if(scanline_number > wave_height){
         current_scroll -= 7;
+        background_scroll -= 7;
         VDP_setVerticalScroll(PLAN_A, current_scroll);
+        VDP_setVerticalScroll(PLAN_B, background_scroll);
     }
     
     if(scanline_number > wave_height && scanline_number%2 == 0){
         VDP_setHorizontalScroll(PLAN_A, ripple_sine_table[sine_ripple] + ukk_x_pos);
+        VDP_setHorizontalScroll(PLAN_B, ripple_sine_table[sine_ripple]);        
     } else if(scanline_number > wave_height && scanline_number%2 == 1){
-        VDP_setHorizontalScroll(PLAN_A, -ripple_sine_table[sine_ripple] + ukk_x_pos);        
+        VDP_setHorizontalScroll(PLAN_A, -ripple_sine_table[sine_ripple] + ukk_x_pos);   
+        VDP_setHorizontalScroll(PLAN_B, -ripple_sine_table[sine_ripple]);                     
     }
     
     scanline_number++;
@@ -209,6 +214,8 @@ void init_interrupt_test(void)
     int ind = TILE_USERINDEX;
     VDP_drawImageEx(PLAN_A, &bga_image, TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, ind), 10, 30, FALSE, TRUE);
     VDP_setPalette(PAL1, bga_image.palette->data);
+    VDP_drawImageEx(PLAN_B, &bgb_image, TILE_ATTR_FULL(PAL2, FALSE, FALSE, FALSE, ind + 400), -1, -1, FALSE, TRUE);
+    VDP_setPalette(PAL2, bgb_image.palette->data);
 
     SYS_enableInts();
 }
@@ -246,8 +253,11 @@ int interrupt_test(void)
     }
     
     scanline_number = 0;
+    background_scroll = 0;
     VDP_setVerticalScroll(PLAN_A, ukk_y_pos);
+    VDP_setVerticalScroll(PLAN_B, 0);
     VDP_setHorizontalScroll(PLAN_A, ukk_x_pos);
+    VDP_setHorizontalScroll(PLAN_B, 0);
 	return (0);
 }
 
