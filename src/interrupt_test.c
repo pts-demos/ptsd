@@ -203,10 +203,7 @@ void h_interrupt_cb(void){
 void init_interrupt_test(void)
 {
 	SYS_disableInts();
-
-	VDP_setScreenHeight240();
-	VDP_setScreenWidth320();
-
+    
     VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
     SYS_setHIntCallback(h_interrupt_cb);
     VDP_setHInterrupt(TRUE);
