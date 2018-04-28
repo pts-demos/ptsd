@@ -16,6 +16,9 @@ int ascension_limit = 240;
 int wave_height = 85;
 int ukk_x_pos_counter = 0;
 int ukk_y_pos_counter = 0;
+int bobbing_counter = 0;
+int descent_began = FALSE;
+int bobbing_limit = 5;
 
 int ripple_sine_table[] = {
     2,2,2,2,2,2,2,2,
@@ -179,13 +182,13 @@ void h_interrupt_cb(void){
     scanline_number++;
     if(++sine_factor_wave > 70){
         sine_factor_wave = 0;
-        if(++sine_wave >= RIPPLE_SINE_COUNT){
+        if(++sine_wave >= RIPPLE_SINE_COUNT - 3){
             sine_wave = 0;
         } 
     }
     if(++sine_factor_ripple > 120){
         sine_factor_ripple = 0;
-        if(++sine_ripple >= RIPPLE_SINE_COUNT){
+        if(++sine_ripple >= RIPPLE_SINE_COUNT - 3){
             sine_ripple = 0;
         } 
     }
@@ -214,7 +217,7 @@ int interrupt_test(void)
 {
 	VDP_waitVSync();
     ukk_x_pos = 70 - ukk_x_pos_sine_table[++ukk_x_pos_counter];
-    if(ukk_x_pos_counter >= UKK_X_SINE_COUNT){
+    if(ukk_x_pos_counter >= UKK_X_SINE_COUNT - 2){
         ukk_x_pos_counter = 0;
     }
 
@@ -226,11 +229,20 @@ int interrupt_test(void)
         }
     }
 
-    if(ascension_happened == TRUE){
+    if(ascension_happened == TRUE && descent_began == FALSE){
         ukk_y_pos = ascension_limit - ukk_y_pos_sine_table[++ukk_y_pos_counter];
-        if(ukk_y_pos_counter >= UKK_Y_SINE_COUNT){
+        if(ukk_y_pos_counter >= UKK_Y_SINE_COUNT - 2){
             ukk_y_pos_counter = 0;
+            bobbing_counter++;
         }
+    }
+
+    if(descent_began == TRUE){
+        ukk_y_pos--;
+    }
+
+    if(bobbing_counter > bobbing_limit){
+        descent_began = TRUE;
     }
     
     scanline_number = 0;
