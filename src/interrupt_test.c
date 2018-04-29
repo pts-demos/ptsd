@@ -217,7 +217,7 @@ void init_interrupt_test(void)
     SYS_enableInts();
 }
 
-int interrupt_test(void)
+void interrupt_test(void)
 {
 	VDP_waitVSync();
     ukk_x_pos = 70 - ukk_x_pos_sine_table[++ukk_x_pos_counter];
@@ -255,7 +255,6 @@ int interrupt_test(void)
     VDP_setVerticalScroll(PLAN_B, 0);
     VDP_setHorizontalScroll(PLAN_A, ukk_x_pos);
     VDP_setHorizontalScroll(PLAN_B, 0);
-	return (0);
 }
 
 int end_interrupt_test(void)
