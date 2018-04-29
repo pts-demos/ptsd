@@ -2,5 +2,6 @@
 #define _RES_GFX_H_
 
 extern const Image bga_image;
+extern const Image bgb_image;
 
 #endif // _RES_GFX_H_

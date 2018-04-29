@@ -32,6 +32,9 @@ clear_screen(void)
 
 void fade_to_black(void)
 {
+	SYS_disableInts();
+	VDP_setHInterrupt(FALSE);
+	SYS_enableInts();
 	VDP_fadeOutAll(60, 0);
 	clear_screen();
 }

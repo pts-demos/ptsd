@@ -1,8 +1,7 @@
 #include <genesis.h>
 #include <vdp.h>
-#include "rotating_patterns.h"
+#include "flying_rectangles.h"
 #include "timer.h"
-#include "owb_sin.h"
 
 void load_patterns_image(const u8*, VDPPlan);
 
@@ -12,11 +11,10 @@ void load_patterns_image(const u8*, VDPPlan);
 
 // Should prolly move this in some common header?
 #define music_beat 60
-#define music_fade_cols 8
+#define music_fade_cols 7
 
 u16 scroll_counter = 0;
 u16 scroll_speed = 2;
-u8 tiles = 2;
 const u16 rows_per_loop = 1;
 const u16 cols_per_loop = width;
 
@@ -25,102 +23,108 @@ u8 tilemap_a[width * height];
 u8 tilemap_b[width * height];
 u16 colors[music_fade_cols];
 
-// Pairs of patterns that are rendered on two planes
-// If these patterns differ a tiny bit, an interesting
-// effect happens when they are being moved around with an offset
+// Pairs of patterns that are cycled and rendered on two planes
+// They form kind of cube like vertex things
+
 u32 tile_1[8] =
 {
-	0x00010000,
-	0x00011000,
-	0x00111100,
-	0x02211110,
-	0x02111111,
-	0x02211110,
-	0x00111100,
-	0x00011000
+	0x11111111,
+	0x10000001,
+	0x10000001,
+	0x10000001,
+	0x10000001,
+	0x10000001,
+	0x10000001,
+	0x11111111
 };
 
 u32 tile_2[8] =
 {
+	0x00000001,
+	0x00000010,
+	0x00000100,
+	0x00001000,
 	0x00010000,
-	0x00111000,
-	0x01111100,
-	0x22111110,
-	0x21111111,
-	0x22111110,
-	0x01111100,
-	0x00111000
+	0x00100000,
+	0x01000000,
+	0x10000000
 };
 
 u32 tile_3[8] =
 {
-	0x00010000,
-	0x00000000,
-	0x00111000,
-	0x22111110,
-	0x22100111,
-	0x22111110,
-	0x00111000,
-	0x00000000
+	0x22222222,
+	0x10000002,
+	0x10000002,
+	0x10000002,
+	0x10000002,
+	0x10000002,
+	0x10000002,
+	0x11111112
 };
 
 u32 tile_4[8] =
 {
+	0x00000001,
+	0x00000010,
+	0x00000100,
+	0x00001000,
 	0x00010000,
-	0x00000000,
-	0x00111000,
-	0x22111110,
-	0x22111111,
-	0x22111110,
-	0x00111000,
-	0x00000000
+	0x00100000,
+	0x01000000,
+	0x10000000
 };
 
 u32 tile_5[8] =
 {
-	0x12222221,
-	0x11000111,
-	0x10000001,
-	0x00000000,
-	0x10000001,
-	0x11000111,
-	0x12222221,
-	0x11111111
+	0x33333333,
+	0x10000003,
+	0x10000003,
+	0x10000003,
+	0x10000003,
+	0x10000003,
+	0x10000003,
+	0x11111113
 };
 
 u32 tile_6[8] =
 {
-	0x12222221,
-	0x11000111,
-	0x10000011,
-	0x10000011,
-	0x10000001,
-	0x11000111,
-	0x11111111,
-	0x12222221
+	0x00000001,
+	0x00000010,
+	0x00000100,
+	0x00001000,
+	0x00010000,
+	0x00100000,
+	0x01000000,
+	0x10000000
 };
 
 #define rgbToU16(r, g, b) (b << 9) + (g << 5) + (r << 1)
 
 void
-rotating_patterns_init(void)
+flying_rectangles_init(void)
 {
-    // Palette that flashes to white
-	colors[0] = rgbToU16(4,  1, 6);
-	colors[1] = rgbToU16(4,  2, 6);
-	colors[2] = rgbToU16(4,  2, 6);
-	colors[3] = rgbToU16(4,  3, 6);
-	colors[4] = rgbToU16(5,  4, 6);
-	colors[5] = rgbToU16(6,  5, 6);
-	colors[6] = rgbToU16(6,  6, 6);
-	colors[7] = rgbToU16(7,  7, 7);
-	colors[8] = rgbToU16(7,  7, 7);
-	colors[9] = rgbToU16(7,  7, 7);
+    u8 r = 0;
+    u8 g = 5;
+    u8 b = 2;
 
-	VDP_setPaletteColor(1, colors[0]);
-	VDP_setPaletteColor(2, colors[1]);
-    // Note: Sets BG to a color - change it back wnhe needed
-	VDP_setPaletteColor(0, colors[8]);
+    // Create a gradient color palette
+    for (int i = 1; i < music_fade_cols; i++)
+    {
+        b += 1;
+        if (b > 7) {
+            b = 7;
+            g++;
+            if (g > 7) {
+                g = 7;
+                r++;
+                if (r > 7) {
+                    r = 7;
+                }
+            }
+        }
+        colors[i] = rgbToU16(r, g, b);
+        VDP_setPaletteColor(i, colors[i]);
+    }
 
 	VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
 
@@ -149,7 +153,7 @@ set_palette(u8 palette_index) {
 }
 
 void
-rotating_patterns(void) {
+flying_rectangles(void) {
 	static int color_flash_time = 0;
     static u8 color_flash_fade = 0;
     static int fade_delay = 4;
@@ -161,10 +165,8 @@ rotating_patterns(void) {
         color_flash_fade = music_fade_cols;
 		color_flash_time = 0;
         fade_ticks = 0;
-        set_palette(color_flash_fade);
-
-        // It takes a while to load these tiles, but it can be hidden by flashing
-        // the screen white so it's not noticed the framerate isn't stable
+        
+		set_palette(color_flash_fade);
 
         if (pattern == 0) {
             VDP_loadTileData((const u32*)tile_1, 1, 1, 0);
@@ -191,17 +193,15 @@ rotating_patterns(void) {
         }
     }
 
-	scroll_counter = (scroll_counter + scroll_speed) % SIN_LEN;
+	scroll_counter += scroll_speed;
+	VDP_setVerticalScroll(PLAN_A, scroll_counter);
+	if (scroll_counter % 10 == 0)
+		VDP_setHorizontalScroll(PLAN_A, scroll_counter);
 
-	VDP_setVerticalScroll(PLAN_A, sin(scroll_counter));
-	VDP_setHorizontalScroll(PLAN_A, cos(scroll_counter));
-
-    // Offset the second pattern a bit - generates an effect that makes the
-    // patterns look as if they stretch
-	scroll_counter = (scroll_counter+2 + scroll_speed) % SIN_LEN;
-
-	VDP_setVerticalScroll(PLAN_B, sin(scroll_counter));
-	VDP_setHorizontalScroll(PLAN_B, cos(scroll_counter));
+	scroll_counter += 1;
+	VDP_setVerticalScroll(PLAN_B, scroll_counter);
+	if (scroll_counter % 30 == 0)
+		VDP_setHorizontalScroll(PLAN_B, scroll_counter);
 
 	VDP_waitVSync();
 }
