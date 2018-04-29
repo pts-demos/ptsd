@@ -3,6 +3,7 @@
 #include "effectswitcher.h"
 
 u32 effect_started;
+static int pending_transition = 0;
 
 void
 effects_init(void)
@@ -16,6 +17,17 @@ effects_init(void)
 void
 play_effect(void)
 {
+	if (pending_transition) {
+		struct effect *next = current_effect + pending_transition;
+		pending_transition = 0;
+		if (next < effects || !next->effect)
+			return;
+		current_effect->transition();
+		if (next->init)
+			next->init();
+		current_effect = next;
+		effect_started = getTick();
+	}
 	current_effect->effect();
 	if (!current_effect->duration)
 		return;
@@ -27,24 +39,11 @@ play_effect(void)
 void
 prev_effect(void)
 {
-	if (current_effect == effects)
-		return;
-	current_effect->transition();
-	current_effect--;
-	if (current_effect->init)
-		current_effect->init();
-	effect_started = getTick();
+	pending_transition = -1;
 }
 
 void
 next_effect(void)
 {
-	struct effect *next = current_effect + 1;
-	if (!next->effect)
-		return;
-	current_effect->transition();
-	current_effect = next;
-	if (current_effect->init)
-		current_effect->init();
-	effect_started = getTick();
+	pending_transition = +1;
 }
