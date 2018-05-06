@@ -207,6 +207,7 @@ void init_interrupt_test(void)
     VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
     SYS_setHIntCallback(h_interrupt_cb);
     VDP_setHInterrupt(TRUE);
+    VDP_setPlanSize(64, 64);
 
     int ind = TILE_USERINDEX;
     VDP_drawImageEx(PLAN_A, &bga_image, TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, ind), 10, 30, FALSE, TRUE);
