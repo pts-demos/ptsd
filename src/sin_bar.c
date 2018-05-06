@@ -2,6 +2,7 @@
 #include <vdp.h>
 #include "sin_bar.h"
 #include "timer.h"
+#include "gfx.h"
 
 /* utils/generate_sin 200 0 27 */
 const u8 sines[] = { 13,13,13,14,14,15,15,15,16,16,17,17,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,23,23,24,24,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,26,25,25,25,25,25,25,25,25,25,25,25,25,24,24,24,24,24,23,23,23,23,23,22,22,22,21,21,21,20,20,20,19,19,19,18,18,18,17,17,17,16,16,15,15,15,14,14,13,13,13,12,12,11,11,10,10,10,9,9,8,8,8,7,7,7,6,6,6,5,5,5,4,4,4,3,3,3,2,2,2,2,2,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,9,9,10,10,10,11,11,12,12 };
@@ -110,6 +111,11 @@ sin_bar_init(void)
 	VDP_loadTileData((const u32*)tile2, tile2_index, 1, 0);
 	VDP_loadTileData((const u32*)tile3, tile3_index, 1, 0);
 	VDP_loadTileData((const u32*)tile4, tile4_index, 1, 0);
+	
+	VDP_setPlanSize(128, 32);
+
+	VDP_drawImageEx(PLAN_A, &scroller_1, TILE_ATTR_FULL(PAL2, FALSE, FALSE, FALSE, TILE_USERINDEX), 8, 1, FALSE, TRUE);
+    VDP_setPalette(PAL2, scroller_1.palette->data);
 
 	u8 r = 0;
 	u8 g = 0;
@@ -173,33 +179,24 @@ sin_bar(void) {
 	 * the tail is not moving do not clear anything.
 	 */
 	if (old_tail < bar_tail_y)
-		VDP_clearTileMapRect(PLAN_A, 0, old_tail, 40, 1);
+		VDP_clearTileMapRect(PLAN_B, 0, old_tail, 40, 1);
 	else if (old_tail > bar_tail_y)
-		VDP_clearTileMapRect(PLAN_A, 0, old_tail+3, 40, 1);
+		VDP_clearTileMapRect(PLAN_B, 0, old_tail+3, 40, 1);
 
 	/*
 	 * Draw the bar. Each tile is 8*8px and composes a fourth of the height
 	 * of the bar, and we draw them across the entire screen width (ie.
 	 * 40*8 pixels)
 	 */
-	VDP_fillTileMapRect(PLAN_A, tile1_index, 0, bar_head_y, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile2_index, 0, bar_head_y+1, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile3_index, 0, bar_head_y+2, 40, 1);
-	VDP_fillTileMapRect(PLAN_A, tile4_index, 0, bar_head_y+3, 40, 1);
+	VDP_fillTileMapRect(PLAN_B, tile1_index, 0, bar_head_y, 40, 1);
+	VDP_fillTileMapRect(PLAN_B, tile2_index, 0, bar_head_y+1, 40, 1);
+	VDP_fillTileMapRect(PLAN_B, tile3_index, 0, bar_head_y+2, 40, 1);
+	VDP_fillTileMapRect(PLAN_B, tile4_index, 0, bar_head_y+3, 40, 1);
 
-	VDP_setTextPlan(PLAN_B);
+	VDP_setTextPlan(PLAN_A);
 	msg_scrolloffset += 2;
-	/* once we've scrolled the entire message offscreen, wrap & change
-	 * message */
-	if (msg_scrolloffset > VDP_getScreenWidth() + 8*strlen(*msg)) {
-		msg_scrolloffset = 0;
-		msg++;
-		if (!*msg)
-			msg = greetz;
-	}
-	VDP_setHorizontalScroll(PLAN_B, VDP_getScreenWidth()-msg_scrolloffset);
-	VDP_setTextPalette(3);
-	VDP_drawText(*msg, 0, bar_head_y+1);
+
+	VDP_setHorizontalScroll(PLAN_A, VDP_getScreenWidth()-msg_scrolloffset);
+	VDP_setVerticalScroll(PLAN_A, -bar_head_y*8);
 	VDP_waitVSync();
-	VDP_clearText(0, bar_head_y+1, 40);
 }

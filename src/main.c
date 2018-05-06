@@ -14,7 +14,7 @@
 
 struct effect effects[] = {
 	/* render func, init func, transition, duration (sec) */
-	{ sin_bar, sin_bar_init, fade_to_black, 8 },
+	{ sin_bar, sin_bar_init, fade_to_black, 10 },
 	{ wave1, wave1_init, fade_to_black, 12 },
 	{ interrupt_test, init_interrupt_test, fade_to_black, 28},
 	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
