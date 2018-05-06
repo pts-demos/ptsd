@@ -19,7 +19,11 @@ int main(int argc, char **argv)
 {
 	char *outfile;
 	long values[3];
-	const char *prog = getprogname();
+	const char *prog = strrchr(argv[0], '/');
+	if (prog)
+		prog++;
+	else
+		prog = argv[0];
 	double (*fun)(double) = sin;
 	if (argc != 4)
 		errx(1, "usage: %s count min max", prog);
