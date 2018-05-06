@@ -13,16 +13,6 @@ const u16 tile2_index = 2;
 const u16 tile3_index = 3;
 const u16 tile4_index = 4;
 
-char *greetz[] = {
-	"Oispa kaljaa",
-	"34C3",
-	"Arabuusimiehet",
-	"shadez",
-	"Hipo",
-	'\0'
-};
-char **msg = greetz;
-
 // Create some tile buffers
 // each element in these arrays represents a color register value
 // 0x1111ffff would mean the first 4 pixels use color register 1,
@@ -192,8 +182,6 @@ sin_bar(void) {
 	VDP_fillTileMapRect(PLAN_B, tile2_index, 0, bar_head_y+1, 40, 1);
 	VDP_fillTileMapRect(PLAN_B, tile3_index, 0, bar_head_y+2, 40, 1);
 	VDP_fillTileMapRect(PLAN_B, tile4_index, 0, bar_head_y+3, 40, 1);
-
-	VDP_setTextPlan(PLAN_A);
 	msg_scrolloffset += 2;
 
 	VDP_setHorizontalScroll(PLAN_A, VDP_getScreenWidth()-msg_scrolloffset);
