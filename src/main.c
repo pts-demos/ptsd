@@ -12,6 +12,13 @@
 #include "transitions.h"
 #include "interrupt_test.h"
 
+void
+end(void)
+{
+	SND_stopPlay_VGM();
+	VDP_resetScreen();
+}
+
 struct effect effects[] = {
 	/* render func, init func, transition, duration (sec) */
 	{ sin_bar, sin_bar_init, fade_to_black, 30 },
@@ -21,7 +28,8 @@ struct effect effects[] = {
 	 * sin_bar(), sin_bar() bugs */
 	{ scroll, scroll_init, fade_to_black, 15 },
 	{ flying_rectangles, flying_rectangles_init, fade_to_black, 15 },
-	{ crypto_pts, crypto_pts_init, fade_to_black, 0 },
+	{ crypto_pts, crypto_pts_init, fade_to_black, 50 },
+	{ end, NULL, fade_to_black, 0 },
 	{ NULL, NULL, NULL, 0 },
 };
 
