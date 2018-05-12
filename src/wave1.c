@@ -18,14 +18,6 @@
 u32* wave_tilebuffer = NULL;
 extern u16 rgbToU16(u8 r, u8 g, u8 b);
 
-// The distances only need to be computed for one quarter of the screen
-// 75 is the max distance one half of the screen have
-#define WAVE_DIST_MAX_X 75
-#define WAVE_DIST_MAX_Y 75
-
-// Precomputed table of distances to the center of the screen
-u16* wave_dist_table = NULL;
-
 // Found on the internet
 u16 silly_sqrt(u32 x)
 {
@@ -59,18 +51,6 @@ u16 distance = 0;
 void
 wave1_init(void)
 {
-	// TODO: call MEM_free once we have some effect unload routine
-	// pre-generate a table of distance values expressing how far
-	// from the center each pixel is
-	wave_dist_table = MEM_alloc(WAVE_DIST_MAX_X * WAVE_DIST_MAX_Y * sizeof(u16));
-	u32 dist_x, dist_y;
-	for (dist_y = 0; dist_y < WAVE_DIST_MAX_Y; dist_y++) {
-		for (dist_x = 0; dist_x < WAVE_DIST_MAX_X; dist_x++) {
-			wave_dist_table[dist_y * WAVE_DIST_MAX_X + dist_x] =
-				silly_sqrt((dist_x*dist_x) + (dist_y*dist_y));
-		}
-	}
-
 	// Don't allocate this in .text segment as it eats up too much space
 	// TODO: free this
 	wave_tilebuffer = MEM_alloc(screenTileWidthQuarter * screenTileHeightQuarter * rowsInTile * sizeof(u32));
@@ -119,11 +99,12 @@ wave1_init(void)
 			} else {
 				if (tile_x <= screenTileWidthQuarter) {
 					// bottom left, flip y
+					// TODO: Fix one odd column
 					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter + tile_x -1;
 				}
 				else {
 					// bottom right, flip x and y
-					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter + (screenTileWidth - tile_x) -1;
+					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter + (screenTileWidth - tile_x);
 				}
 			}
 			tileIndex += 1;
@@ -181,7 +162,6 @@ wave1(void)
             pixel_x = x << 3;
             distance_x = abs(screenPixelHalfX - pixel_x) + sin_time;
             distance = silly_sqrt((distance_x*distance_x) + (distance_y*distance_y));
-            //distance = wave_dist_table[(distance_x*distance_x) + (distance_y*distance_y)];
 
             // The distance we work with are [0,160] (half screen width at maximum, height is less and doesn't really matter)
             // To add the time component (the sin inside the sin) we pre-compute a sin table that contains values from 0 to 160
