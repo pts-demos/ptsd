@@ -5,15 +5,27 @@
 #define columnsInTile 8
 #define rowsInTile 8
 #define screenTileWidth 40
+#define screenTileWidthQuarter 20
 #define screenTileHeight 28
+#define screenTileHeightQuarter 14
 #define screenPixelWidth 320
+#define screenPixelWidthQuarter 160
 #define screenPixelHeight 240
+#define screenPixelHeightQuarter 120
 #define screenPixelHalfX screenPixelWidth / 2
 #define screenPixelHalfY screenPixelHeight / 2
 
 u32 wave_tilebuffer[screenTileWidth * screenTileHeight * rowsInTile];
 
 extern u16 rgbToU16(u8 r, u8 g, u8 b);
+
+// The distances only need to be computed for one quarter of the screen
+// 75 is the max distance one half of the screen have
+#define WAVE_DIST_MAX_X 75
+#define WAVE_DIST_MAX_Y 75
+
+// Precomputed table of distances to the center of the screen
+u16* wave_dist_table = NULL;
 
 // Found on the internet
 u16 silly_sqrt(u32 x)
@@ -44,14 +56,32 @@ s16 pixel_y = 0;
 u8 channel_index = 0;
 u32 arrIndex = 0;
 u16 distance = 0;
-// Tile 0 is backgroud, so start indexing at 1
-u16 tileIndex = 1;
 
 void
 wave1_init(void)
 {
-    VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
+	// TODO: call MEM_free once we have some effect unload routine
+	// pre-generate a table of distance values expressing how far
+	// from the center each pixel is
+	wave_dist_table = MEM_alloc(WAVE_DIST_MAX_X * WAVE_DIST_MAX_Y * sizeof(u16));
+	u32 dist_x, dist_y;
+	for (dist_y = 0; dist_y < WAVE_DIST_MAX_Y; dist_y++) {
+		for (dist_x = 0; dist_x < WAVE_DIST_MAX_X; dist_x++) {
+			wave_dist_table[dist_y * WAVE_DIST_MAX_X + dist_x] =
+				silly_sqrt((dist_x*dist_x) + (dist_y*dist_y));
+		}
+	}
 
+	// reset tile pixel data to 0
+	for (dist_y = 0; dist_y < screenTileHeight; dist_y++) {
+		for (dist_x = 0; dist_x < screenTileWidth; dist_x++) {
+            arrIndex = (dist_y * screenTileWidth + dist_x) * rowsInTile;
+			for (u32 p = 0; p < 8; p++)
+				wave_tilebuffer[arrIndex + p] = 0;
+		}
+	}
+
+    VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
     u16 palettes[17];
 
     u8 r = 0;
@@ -76,15 +106,36 @@ wave1_init(void)
         palettes[i] = rgbToU16(r, g, b);
         VDP_setPaletteColor(i, palettes[i]);
     }
-    for (u32 y = 0; y < screenTileHeight; y++)
-    {
-        for (u32 x = 0; x < screenTileWidth; x++)
-        {
-            arrIndex = (y * screenTileWidth + x) * rowsInTile;
-            VDP_loadTileData((const u32*)&wave_tilebuffer[arrIndex], tileIndex, 1, 0);
-            tileIndex++;
-        }
-    }
+
+	// Draw a sequence of tiles that will be updated every frame
+    // Tile 0 is background, so start indexing at 1
+	u16 tileIndex = 0;
+	s16 tile_y, tile_x;
+	for (tile_y = 0; tile_y < screenTileHeight; tile_y++) {
+		for (tile_x = 0; tile_x < screenTileWidth; tile_x++) {
+			if (tile_y <= screenTileHeightQuarter) {
+				if (tile_x <= screenTileWidthQuarter) {
+					// top left, order is normal
+					tileIndex = tile_y * screenTileWidthQuarter + tile_x;
+				}
+				else {
+					// top right, mirror along x axis
+					tileIndex = tile_y * screenTileWidthQuarter + (screenTileWidthQuarter - (tile_x - screenTileWidthQuarter));
+				}
+			} else {
+				if (tile_x <= screenTileWidthQuarter) {
+					// bottom left, flip y
+					tileIndex = (screenTileHeight - tile_y) * screenTileWidthQuarter + tile_x;
+				}
+				else {
+					// bottom right, flip x and y
+					tileIndex = (screenTileHeight - tile_y) * screenTileWidthQuarter + (screenTileWidth - tile_x);
+				}
+			}
+
+			VDP_fillTileMapRect(PLAN_A, tileIndex, tile_x, tile_y, 1, 1);
+		}
+	}
 }
 
 void
@@ -94,7 +145,6 @@ wave1(void)
     static u16 sin_time = 0;
 
     static u16 line_to_draw = 0;
-    static u16 lines_per_loop = screenTileHeight;
 
     counter++;
     if (counter > SIN_TIME_COUNT)
@@ -103,14 +153,18 @@ wave1(void)
     wave_scroll += 1;
     sin_time = SIN_TIME_DATA[counter];
 
-    for (u32 y = line_to_draw; y < line_to_draw + lines_per_loop; y++)
+	// As the wave pattern is drawn in the center of screen, we only need to
+	// calculate one quarter of the screen - the rest can be duplicated to the
+	// other quarters
+
+    for (u32 y = line_to_draw; y < screenTileHeightQuarter; y++)
     {
-        pixel_y = y * 8;
+		// multiply by 8
+        pixel_y = y << 3;
         distance_y = abs(screenPixelHalfY - pixel_y) + sin_time;
 
-        for (u32 x = 0; x < screenTileWidth; x++)
+        for (u32 x = 0; x < screenTileWidthQuarter; x++)
         {
-
             // to get a moving sine wave at pixel (x,y), the following equation
             // can be used:
             // intensity = |sin(1 / (sqrt( (i*sin(t))^2 + (j*sin(t))^2)))|
@@ -128,9 +182,11 @@ wave1(void)
             // 1. Work without floats (implement sqrt or avoid sqrt in the first place)
             // 2. Work without real-time sine (use look-up table)
 
-            pixel_x = x * 8;
+			/// multiply by 8
+            pixel_x = x << 3;
             distance_x = abs(screenPixelHalfX - pixel_x) + sin_time;
             distance = silly_sqrt((distance_x*distance_x) + (distance_y*distance_y));
+            //distance = wave_dist_table[(distance_x*distance_x) + (distance_y*distance_y)];
 
             // The distance we work with are [0,160] (half screen width at maximum, height is less and doesn't really matter)
             // To add the time component (the sin inside the sin) we pre-compute a sin table that contains values from 0 to 160
@@ -146,8 +202,12 @@ wave1(void)
             //channel_index = distance / 20;
             channel_index = SIN_WAVE_DATA[distance];
             arrIndex = (y * screenTileWidth + x) * rowsInTile;
-            if (channel_index > 16)
-                channel_index = 16;
+
+			// This test is necessary for creating a beautiful effect
+			// but it's not strictly needed if some artifacts are ok
+			// Not clamping this produces some noise when the effect is "zoomed in"
+            if (channel_index > 15)
+                channel_index = 15;
 
             u32 all_chans = 0;
             all_chans += (channel_index << 28)
@@ -165,21 +225,33 @@ wave1(void)
     }
 
     // Tile 0 is backgroud, so start indexing at 1
+#if 0
     u16 tileIndex = line_to_draw + 1;
-    for (u32 y = line_to_draw; y < line_to_draw + lines_per_loop; y++)
+    for (u32 y = line_to_draw; y < screenTileHeightQuarter; y++)
     {
         for (u32 x = 0; x < screenTileWidth; x++)
         {
             arrIndex = (y * screenTileWidth + x) * rowsInTile;
             VDP_loadTileData((const u32*)&wave_tilebuffer[arrIndex], tileIndex, 1, 0);
-            VDP_fillTileMapRect(PLAN_A, tileIndex, x, y, 1, 1);
             tileIndex++;
         }
     }
+#else
 
-    line_to_draw += lines_per_loop;
-    if (line_to_draw >= screenTileHeight)
-        line_to_draw = 0;
+	// Update the tile data for the top left quarter of the screen
+	// As the same tiles are used everywher else, they will also update
+	u16 tileIndex = 1;
+    for (u32 y = 0; y < screenTileHeightQuarter; y++)
+    {
+        for (u32 x = 0; x < screenTileWidthQuarter; x++)
+        {
+            arrIndex = (y * screenTileWidth + x) * rowsInTile;
+            VDP_loadTileData((const u32*)&wave_tilebuffer[arrIndex],
+				tileIndex, 1, 0);
+            tileIndex++;
+        }
+    }
+#endif
 
     VDP_waitVSync();
 }
