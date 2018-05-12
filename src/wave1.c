@@ -53,7 +53,8 @@ wave1_init(void)
 {
 	// Don't allocate this in .text segment as it eats up too much space
 	// TODO: free this
-	wave_tilebuffer = MEM_alloc(screenTileWidthQuarter * screenTileHeightQuarter * rowsInTile * sizeof(u32));
+	wave_tilebuffer = MEM_alloc(screenTileWidthQuarter * screenTileHeightQuarter *
+		rowsInTile * sizeof(u32));
 
     VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
     u16 palettes[17];
@@ -83,6 +84,10 @@ wave1_init(void)
 
 	// Draw a sequence of tiles that will be updated every frame
     // Tile 0 is background, so start indexing at 1
+	// The tiles are drawn so that only the top left quarter of the screen
+	// is updated - the rest of the quarters are copied from these tiles
+	// so the whole screen gets updated but only quarter of it needs to be
+	// computed.
 	u16 tileIndex = 0;
 	s16 tile_y, tile_x;
 	for (tile_y = 0; tile_y < screenTileHeight; tile_y++) {
@@ -94,17 +99,20 @@ wave1_init(void)
 				}
 				else {
 					// top right, mirror along x axis
-					tileIndex = tile_y * screenTileWidthQuarter + (screenTileWidthQuarter - (tile_x - screenTileWidthQuarter)) -1;
+					tileIndex = tile_y * screenTileWidthQuarter +
+						(screenTileWidthQuarter - (tile_x - screenTileWidthQuarter)) -1;
 				}
 			} else {
 				if (tile_x <= screenTileWidthQuarter) {
 					// bottom left, flip y
 					// TODO: Fix one odd column
-					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter + tile_x -1;
+					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter +
+						tile_x -1;
 				}
 				else {
 					// bottom right, flip x and y
-					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter + (screenTileWidth - tile_x);
+					tileIndex = (screenTileHeight - tile_y -1) *
+						screenTileWidthQuarter + (screenTileWidth - tile_x);
 				}
 			}
 			tileIndex += 1;
