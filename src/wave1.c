@@ -15,8 +15,7 @@
 #define screenPixelHalfX screenPixelWidth / 2
 #define screenPixelHalfY screenPixelHeight / 2
 
-u32 wave_tilebuffer[screenTileWidth * screenTileHeight * rowsInTile];
-
+u32* wave_tilebuffer = NULL;
 extern u16 rgbToU16(u8 r, u8 g, u8 b);
 
 // The distances only need to be computed for one quarter of the screen
@@ -72,7 +71,12 @@ wave1_init(void)
 		}
 	}
 
+	// Don't allocate this in .text segment as it eats up too much space
+	// TODO: free this
+	wave_tilebuffer = MEM_alloc(screenTileWidthQuarter * screenTileHeightQuarter * rowsInTile * sizeof(u32));
+
 	// reset tile pixel data to 0
+#if 0
 	for (dist_y = 0; dist_y < screenTileHeight; dist_y++) {
 		for (dist_x = 0; dist_x < screenTileWidth; dist_x++) {
             arrIndex = (dist_y * screenTileWidth + dist_x) * rowsInTile;
@@ -80,6 +84,7 @@ wave1_init(void)
 				wave_tilebuffer[arrIndex + p] = 0;
 		}
 	}
+#endif
 
     VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
     u16 palettes[17];
@@ -224,20 +229,6 @@ wave1(void)
         }
     }
 
-    // Tile 0 is backgroud, so start indexing at 1
-#if 0
-    u16 tileIndex = line_to_draw + 1;
-    for (u32 y = line_to_draw; y < screenTileHeightQuarter; y++)
-    {
-        for (u32 x = 0; x < screenTileWidth; x++)
-        {
-            arrIndex = (y * screenTileWidth + x) * rowsInTile;
-            VDP_loadTileData((const u32*)&wave_tilebuffer[arrIndex], tileIndex, 1, 0);
-            tileIndex++;
-        }
-    }
-#else
-
 	// Update the tile data for the top left quarter of the screen
 	// As the same tiles are used everywher else, they will also update
 	u16 tileIndex = 1;
@@ -251,7 +242,6 @@ wave1(void)
             tileIndex++;
         }
     }
-#endif
 
     VDP_waitVSync();
 }
