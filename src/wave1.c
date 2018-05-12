@@ -75,17 +75,6 @@ wave1_init(void)
 	// TODO: free this
 	wave_tilebuffer = MEM_alloc(screenTileWidthQuarter * screenTileHeightQuarter * rowsInTile * sizeof(u32));
 
-	// reset tile pixel data to 0
-#if 0
-	for (dist_y = 0; dist_y < screenTileHeight; dist_y++) {
-		for (dist_x = 0; dist_x < screenTileWidth; dist_x++) {
-            arrIndex = (dist_y * screenTileWidth + dist_x) * rowsInTile;
-			for (u32 p = 0; p < 8; p++)
-				wave_tilebuffer[arrIndex + p] = 0;
-		}
-	}
-#endif
-
     VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
     u16 palettes[17];
 
@@ -118,25 +107,26 @@ wave1_init(void)
 	s16 tile_y, tile_x;
 	for (tile_y = 0; tile_y < screenTileHeight; tile_y++) {
 		for (tile_x = 0; tile_x < screenTileWidth; tile_x++) {
-			if (tile_y <= screenTileHeightQuarter) {
-				if (tile_x <= screenTileWidthQuarter) {
+			if (tile_y < screenTileHeightQuarter) {
+				if (tile_x < screenTileWidthQuarter) {
 					// top left, order is normal
 					tileIndex = tile_y * screenTileWidthQuarter + tile_x;
 				}
 				else {
 					// top right, mirror along x axis
-					tileIndex = tile_y * screenTileWidthQuarter + (screenTileWidthQuarter - (tile_x - screenTileWidthQuarter));
+					tileIndex = tile_y * screenTileWidthQuarter + (screenTileWidthQuarter - (tile_x - screenTileWidthQuarter)) -1;
 				}
 			} else {
 				if (tile_x <= screenTileWidthQuarter) {
 					// bottom left, flip y
-					tileIndex = (screenTileHeight - tile_y) * screenTileWidthQuarter + tile_x;
+					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter + tile_x -1;
 				}
 				else {
 					// bottom right, flip x and y
-					tileIndex = (screenTileHeight - tile_y) * screenTileWidthQuarter + (screenTileWidth - tile_x);
+					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter + (screenTileWidth - tile_x) -1;
 				}
 			}
+			tileIndex += 1;
 
 			VDP_fillTileMapRect(PLAN_A, tileIndex, tile_x, tile_y, 1, 1);
 		}
