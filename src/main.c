@@ -11,6 +11,7 @@
 #include "effectswitcher.h"
 #include "transitions.h"
 #include "interrupt_test.h"
+#include "prerendered_cube.h"
 
 void
 end(void)
@@ -23,7 +24,8 @@ struct effect effects[] = {
 	/* render func, init func, transition, duration (sec) */
 	{ sin_bar, sin_bar_init, fade_to_black, 30 },
 	{ wave1, wave1_init, fade_to_black, 12 },
-	{ interrupt_test, init_interrupt_test, fade_to_black, 28},
+	{ interrupt_test, init_interrupt_test, fade_to_black, 15},
+	{ prerendered_cube, prerendered_cube_init, fade_to_black, 12},
 	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
 	 * sin_bar(), sin_bar() bugs */
 	{ scroll, scroll_init, fade_to_black, 15 },
