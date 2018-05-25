@@ -23,6 +23,14 @@ wipe_screen(void)
 }
 
 void
+clear_preserve_sprites(void)
+{
+	VDP_resetScreen();
+	VDP_setHInterrupt(0);
+	VDP_setPlanSize(64, 64);
+}
+
+void
 clear_screen(void)
 {
 	VDP_clearSprites();

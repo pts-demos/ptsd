@@ -161,6 +161,9 @@ sin_bar_init(void)
 		VDP_setPaletteColor(i, vdp_col);
 		sin_bar_palettes[i] = vdp_col;
 	}
+	cube_inc_x = 2;
+	cube_inc_y = 2;
+	VDP_setHorizontalScroll(PLAN_A, VDP_getScreenWidth());
 }
 
 void
@@ -215,11 +218,8 @@ sin_bar(void) {
 	VDP_fillTileMapRect(PLAN_B, tile4_index, 0, bar_head_y+3, 40, 1);
 	msg_scrolloffset += 2;
 
-	if (msg_scrolloffset % 512 == 0) {
+	if (msg_scrolloffset % 512 == 0)
 		load_next_image();
-		cube_inc_x = 2;
-		cube_inc_y = 2;
-	}
 
 	VDP_setHorizontalScroll(PLAN_A, VDP_getScreenWidth()-msg_scrolloffset);
 	VDP_setVerticalScroll(PLAN_A, -bar_head_y*8);
