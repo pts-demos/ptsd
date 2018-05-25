@@ -3,6 +3,8 @@
 exec >res/scroller.h
 exec 3>res/scroller.res
 
+trap 'rm -f res/scroller.h res/scroller.res' EXIT
+
 echo "#ifndef _RES_SCROLLER_H"
 echo "#define _RES_SCROLLER_H"
 
@@ -16,3 +18,4 @@ for f in res/scroller/*.png; do
 done
 
 echo "#endif"
+trap '' EXIT
