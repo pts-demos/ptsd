@@ -22,17 +22,17 @@ end(void)
 
 struct effect effects[] = {
 	/* render func, init func, transition, duration (sec) */
-	{ sin_bar, sin_bar_init, fade_to_black, 30, NULL},
-	{ wave1, wave1_init, fade_to_black, 12, NULL },
-	{ interrupt_test, init_interrupt_test, fade_to_black, 15, NULL},
-	{ prerendered_cube, prerendered_cube_init, fade_to_black, 12, NULL},
-	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
-	 * sin_bar(), sin_bar() bugs */
-	{ scroll, scroll_init, fade_to_black, 25, NULL},
-	{ wave2, wave2_init, fade_to_black, 12, NULL },
-	{ crypto_pts, crypto_pts_init, clear_screen, 18, NULL },
-	{ end, NULL, clear_screen, 0, NULL },
-	{ NULL, NULL, NULL, 0, NULL },
+	{ sin_bar, sin_bar_init, fade_to_black, 30 },
+	{ wave1, wave1_init, fade_to_black, 12 },
+	{ interrupt_test, init_interrupt_test, fade_to_black, 15 },
+	{ wave2, wave2_init, fade_to_black, 12 },
+	/* NOTE: prerendered_cube is called from scroll(), so keep them
+	 * together */
+	{ prerendered_cube_sync, prerendered_cube_init, NULL, 12 },
+	{ scroll, scroll_init, fade_to_black, 25 },
+	{ crypto_pts, crypto_pts_init, clear_screen, 18 },
+	{ end, NULL, clear_screen, 0 },
+	{ NULL, NULL, NULL, 0 },
 };
 
 void

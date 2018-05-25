@@ -9,11 +9,9 @@ int cube_current_animation;
 Sprite* cube_sprite;
 
 void prerendered_cube_init(void) {
-    SYS_disableInts();
+	SYS_disableInts();
 	SPR_init(1, 768, 768);
 
-	// Set all palette to black
-	VDP_setPaletteColors(0, (u16*)palette_black, 64);
 	SYS_enableInts();
 
 	cube_sprite = SPR_addSprite(&default_cube_sprite, 0, 0,
@@ -25,12 +23,7 @@ void prerendered_cube_init(void) {
 	SPR_setAnim(cube_sprite, cube_current_animation);
 
 	VDP_setPalette(PAL0, default_cube_sprite.palette->data);
-}
-
-void prerendered_cube_uninit(void) {
-	SPR_setPosition(cube_sprite, 400, 300);
-	VDP_waitVSync();
-	SPR_update();
+	VDP_setPaletteColor(0, 0);
 }
 
 void prerendered_cube(void) {
@@ -42,6 +35,10 @@ void prerendered_cube(void) {
 			cube_current_animation = 0;
 	}
 	SPR_update();
-	VDP_waitVSync();
 }
 
+void
+prerendered_cube_sync(void) {
+	prerendered_cube();
+	VDP_waitVSync();
+}

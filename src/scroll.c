@@ -3,6 +3,7 @@
 #include "scroll.h"
 #include "timer.h"
 #include "greets.h"
+#include "prerendered_cube.h"
 
 extern u16 rgbToU16(u8 r, u8 g, u8 b);
 
@@ -109,6 +110,8 @@ scroll(void) {
 	s16 linediff;
 
 	change_count++;
+
+	prerendered_cube();
 
 	if (change_count > change_interval) {
 		u8 x, y;

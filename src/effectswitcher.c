@@ -22,9 +22,8 @@ play_effect(void)
 		pending_transition = 0;
 		if (next < effects || !next->effect)
 			return;
-		current_effect->transition();
-		if (current_effect->uninit != NULL)
-			current_effect->uninit();
+		if (current_effect->transition)
+			current_effect->transition();
 		if (next->init)
 			next->init();
 		current_effect = next;
