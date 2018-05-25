@@ -28,6 +28,7 @@ clear_screen(void)
 	VDP_clearSprites();
 	VDP_resetScreen();
 	VDP_setHInterrupt(0);
+	VDP_setPlanSize(64, 64);
 }
 
 void fade_to_black(void)
