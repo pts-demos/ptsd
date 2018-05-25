@@ -50,7 +50,7 @@ crypto_pts(void)
 			state = 2;
 			break;
 		case 2:
-			testForNextState(500);
+			testForNextState(50);
 			setColor(sin(color_counter)/48+1+jitter);
 			state_counter++;
 			break;
@@ -74,7 +74,7 @@ crypto_pts(void)
 				rotation_speed=5;
 			else
 				rotation_speed=50;
-			testForNextState(10);
+			testForNextState(4);
 			break;
 		case 5:
 			setColor(1);
