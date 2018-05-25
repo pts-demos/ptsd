@@ -38,6 +38,7 @@ u8* wave1_sin_time_data;
 u16 wave1_sin_time_count;
 
 void wave1_fade(void) {
+    MEM_free(wave_tilebuffer);
     SYS_disableInts();
     VDP_setHInterrupt(FALSE);
     SYS_enableInts();
@@ -46,8 +47,6 @@ void wave1_fade(void) {
     VDP_resetScreen();
     VDP_setHInterrupt(0);
     VDP_setPlanSize(64, 64);
-
-    MEM_free(wave_tilebuffer);
 }
 
 void
