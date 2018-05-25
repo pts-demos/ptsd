@@ -1,4 +1,6 @@
 #include <genesis.h>
+#include <timer.h>
+
 #include "sin_wave_data.h"
 #include "sin_time_data.h"
 #include "pts_math.h"
@@ -34,6 +36,19 @@ u8* wave1_sin_wave_data;
 u16 wave1_sin_wave_count;
 u8* wave1_sin_time_data;
 u16 wave1_sin_time_count;
+
+void wave1_fade(void) {
+    SYS_disableInts();
+    VDP_setHInterrupt(FALSE);
+    SYS_enableInts();
+    VDP_fadeOutAll(60, 0);
+    VDP_clearSprites();
+    VDP_resetScreen();
+    VDP_setHInterrupt(0);
+    VDP_setPlanSize(64, 64);
+
+    MEM_free(wave_tilebuffer);
+}
 
 void
 wave1_init(void)

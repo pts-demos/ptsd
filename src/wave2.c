@@ -35,6 +35,20 @@ u16 wave2_sin_wave_count;
 u8* wave2_sin_time_data;
 u16 wave2_sin_time_count;
 
+void wave2_fade(void)
+{
+    SYS_disableInts();
+    VDP_setHInterrupt(FALSE);
+    SYS_enableInts();
+    VDP_fadeOutAll(60, 0);
+    VDP_clearSprites();
+    VDP_resetScreen();
+    VDP_setHInterrupt(0);
+    VDP_setPlanSize(64, 64);
+
+	MEM_free(wave2_tilebuffer);
+}
+
 void
 wave2_init(void)
 {
@@ -165,6 +179,8 @@ wave2(void)
 
 			wave2_distance = silly_sqrt((wave2_distance_x * wave2_distance_x)
 				& (wave2_distance_y * wave2_distance_y)) << 1;
+			if (wave2_distance > 160)
+				wave2_distance = 160;
 
             // The distance we work with are [0,160] (half screen width at maximum, height is less and doesn't really matter)
             // To add the time component (the sin inside the sin) we pre-compute a sin table that contains values from 0 to 160
