@@ -34,6 +34,7 @@ void
 clear_screen(void)
 {
 	VDP_clearSprites();
+	SPR_end();
 	VDP_resetScreen();
 	VDP_setHInterrupt(0);
 	VDP_setPlanSize(64, 64);

@@ -29,7 +29,7 @@ struct effect effects[] = {
 	 * keep them together */
 	{ prerendered_cube_sync, prerendered_cube_init, clear_preserve_sprites, 7 },
 	{ sin_bar, sin_bar_init, clear_preserve_sprites, 20 },
-	{ scroll, scroll_init, fade_to_black, 25 },
+	{ scroll, scroll_init, clear_screen, 25 },
 	{ crypto_pts, crypto_pts_init, clear_screen, 18 },
 	{ end, NULL, clear_screen, 0 },
 	{ NULL, NULL, NULL, 0 },
