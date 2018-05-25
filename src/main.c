@@ -28,10 +28,10 @@ struct effect effects[] = {
 	{ prerendered_cube, prerendered_cube_init, fade_to_black, 12, NULL},
 	/* TODO: scroll() maybe writes out of bounds / Gekko; if it's before
 	 * sin_bar(), sin_bar() bugs */
-	{ scroll, scroll_init, fade_to_black, 15, NULL},
+	{ scroll, scroll_init, fade_to_black, 25, NULL},
 	{ flying_rectangles, flying_rectangles_init, fade_to_black, 15, NULL},
-	{ crypto_pts, crypto_pts_init, fade_to_black, 50, NULL },
-	{ end, NULL, fade_to_black, 0, NULL },
+	{ crypto_pts, crypto_pts_init, clear_screen, 18, NULL },
+	{ end, NULL, clear_screen, 0, NULL },
 	{ NULL, NULL, NULL, 0, NULL },
 };
 

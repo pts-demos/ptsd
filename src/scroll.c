@@ -2,8 +2,37 @@
 #include <vdp.h>
 #include "scroll.h"
 #include "timer.h"
+#include "greets.h"
 
 extern u16 rgbToU16(u8 r, u8 g, u8 b);
+
+/* dummy sentinel value */
+static const Image blank;
+
+/* scroller images must be 512x16 pixels */
+static const Image *scrolltext[] = {
+	&greets_0,
+	&greets_1,
+	&greets_2,
+	&blank,
+	NULL,
+};
+static unsigned img = 0;
+
+static void
+load_next_image(void)
+{
+	/* draw at either 0 or 64 tiles (512px) */
+	u16 xpos = (img % 2) * 64;
+	VDP_clearTileMapRect(PLAN_A, xpos, 15, 64, 2);
+	if (scrolltext[img] == NULL)
+		return;
+	if (scrolltext[img] != &blank)
+		VDP_drawImageEx(PLAN_A, scrolltext[img],
+		    TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_USERINDEX+100+128*img),
+		    xpos, 15, TRUE, TRUE);
+	img++;
+}
 
 void
 scroll_init(void)
@@ -23,6 +52,9 @@ scroll_init(void)
 	u16 col13 = rgbToU16(0, 1, 1);
 	u16 col14 = rgbToU16(0, 1, 0);
 	u16 col15 = rgbToU16(0, 0, 0);
+
+	VDP_setPlanSize(128, 32);
+	VDP_setHorizontalScroll(PLAN_B, 0);
 
 	VDP_setPaletteColor(1, col1);
 	VDP_setPaletteColor(2, col2);
@@ -58,6 +90,8 @@ scroll_init(void)
 		VDP_loadTileData((const u32*)empty, set_tile, 1, 0);
 	}
 
+	load_next_image();
+
 }
 
 u8 render_tile = 1;
@@ -70,6 +104,7 @@ scroll(void) {
 	static s16 scroll_count = 0;
 	const s16 change_interval = 3;
 	static s16 change_count = 0;
+	static s16 msg_scrolloffset = 0;
 	u16 assign_val = 0;
 	s16 linediff;
 
@@ -118,11 +153,15 @@ scroll(void) {
 		VDP_setPaletteColor(14, first);
 	}
 
-	VDP_fillTileMapRect(PLAN_A, render_tile, 42 - (scroll_count >> 3), 0, 1, 30);
+	VDP_fillTileMapRect(PLAN_B, render_tile, 42 - (scroll_count >> 3), 0, 1, 30);
 
 	scroll_count -= 8;
 
-	VDP_setHorizontalScroll(PLAN_A, scroll_count);
+	VDP_setHorizontalScroll(PLAN_B, scroll_count);
+	msg_scrolloffset += 2;
+	if (msg_scrolloffset % 512 == 0)
+		load_next_image();
+	VDP_setHorizontalScroll(PLAN_A, VDP_getScreenWidth()-msg_scrolloffset);
 	VDP_waitVSync();
 }
 
