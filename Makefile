@@ -9,7 +9,7 @@ clean:
 	$(MAKE) -f $(GENDEV)/sgdk/mkfiles/makefile.gen clean
 	rm -f $(CLEANFILES)
 
-res/scroller.res res/scroller.h: scroller_1.png
+res/scroller.res: scroller_1.png
 	./makescroller
 
 out/rom.bin: src/*.c src/crypto_pts_images.c res/scroller.res

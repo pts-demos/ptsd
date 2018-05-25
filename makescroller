@@ -1,21 +1,15 @@
 #!/bin/sh -e
 
-exec >res/scroller.h
-exec 3>res/scroller.res
+exec >res/scroller.res
 
 trap 'rm -f res/scroller.h res/scroller.res' EXIT
-
-echo "#ifndef _RES_SCROLLER_H"
-echo "#define _RES_SCROLLER_H"
 
 rm -rf res/scroller
 mkdir res/scroller
 convert scroller_1.png -crop 512x16 PNG8:res/scroller/%01d.png
 for f in res/scroller/*.png; do
     n=$(basename $f .png)
-    echo "extern const Image scroller_${n};"
-    echo "IMAGE scroller_${n} \"scroller/${n}.png\" NONE" >&3
+    echo "IMAGE scroller_${n} \"scroller/${n}.png\" NONE"
 done
 
-echo "#endif"
 trap '' EXIT
