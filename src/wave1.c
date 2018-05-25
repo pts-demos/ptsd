@@ -103,16 +103,16 @@ wave1_init(void)
 						(screenTileWidthQuarter - (tile_x - screenTileWidthQuarter)) -1;
 				}
 			} else {
-				if (tile_x <= screenTileWidthQuarter) {
+				if (tile_x < screenTileWidthQuarter) {
 					// bottom left, flip y
 					// TODO: Fix one odd column
 					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter +
-						tile_x -1;
+						tile_x;
 				}
 				else {
 					// bottom right, flip x and y
 					tileIndex = (screenTileHeight - tile_y -1) *
-						screenTileWidthQuarter + (screenTileWidth - tile_x);
+						screenTileWidthQuarter + (screenTileWidth - tile_x) -1;
 				}
 			}
 			tileIndex += 1;
