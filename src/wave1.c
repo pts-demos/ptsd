@@ -105,7 +105,6 @@ wave1_init(void)
 			} else {
 				if (tile_x < screenTileWidthQuarter) {
 					// bottom left, flip y
-					// TODO: Fix one odd column
 					tileIndex = (screenTileHeight - tile_y -1) * screenTileWidthQuarter +
 						tile_x;
 				}
