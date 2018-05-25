@@ -1,6 +1,9 @@
 #include <genesis.h>
 #include "sin_wave_data.h"
 #include "sin_time_data.h"
+#include "pts_math.h"
+#include "sin_time_data.h"
+#include "sin_wave_data.h"
 
 #define columnsInTile 8
 #define rowsInTile 8
@@ -17,26 +20,6 @@
 
 u32* wave_tilebuffer = NULL;
 extern u16 rgbToU16(u8 r, u8 g, u8 b);
-
-// Found on the internet
-u16 silly_sqrt(u32 x)
-{
-    u16 res = 0;
-    u16 add = 0x8000;
-    u8 i;
-    for (i = 0; i < 16; i++)
-    {
-        u16 temp = res | add;
-        u32 g2 = temp * temp;
-        if (x >= g2)
-        {
-            res = temp;
-        }
-        add >>= 1;
-    }
-    return res;
-}
-
 s16 wave_scroll = 10;
 
 // distance to the screen center point
@@ -47,6 +30,10 @@ s16 pixel_y = 0;
 u8 channel_index = 0;
 u32 arrIndex = 0;
 u16 distance = 0;
+u8* wave1_sin_wave_data;
+u16 wave1_sin_wave_count;
+u8* wave1_sin_time_data;
+u16 wave1_sin_time_count;
 
 void
 wave1_init(void)
@@ -119,6 +106,11 @@ wave1_init(void)
 			VDP_fillTileMapRect(PLAN_A, tileIndex, tile_x, tile_y, 1, 1);
 		}
 	}
+
+	wave1_sin_wave_data = get_sin_wave_ptr();
+	wave1_sin_wave_count = get_sin_wave_count();
+	wave1_sin_time_data = get_sin_time_ptr();
+	wave1_sin_time_count = get_sin_time_count();
 }
 
 void
@@ -130,11 +122,11 @@ wave1(void)
     static u16 line_to_draw = 0;
 
     counter++;
-    if (counter > SIN_TIME_COUNT)
+    if (counter > wave1_sin_time_count)
         counter = 0;
 
     wave_scroll += 1;
-    sin_time = SIN_TIME_DATA[counter];
+    sin_time = wave1_sin_time_data[counter];
 
 	// As the wave pattern is drawn in the center of screen, we only need to
 	// calculate one quarter of the screen - the rest can be duplicated to the
@@ -182,7 +174,7 @@ wave1(void)
             // Let's say at the center of the screen red channel is 0 and at the edges it is 7
             // Calculate what color palette to use at a specific distance to the screen center
             //channel_index = distance / 20;
-            channel_index = SIN_WAVE_DATA[distance];
+            channel_index = wave1_sin_wave_data[distance];
             arrIndex = (y * screenTileWidth + x) * rowsInTile;
 
 			// This test is necessary for creating a beautiful effect
