@@ -22,13 +22,13 @@ end(void)
 
 struct effect effects[] = {
 	/* render func, init func, transition, duration (sec) */
-	{ sin_bar, sin_bar_init, fade_to_black, 30 },
 	{ wave1, wave1_init, fade_to_black, 12 },
 	{ interrupt_test, init_interrupt_test, fade_to_black, 15 },
 	{ wave2, wave2_init, fade_to_black, 12 },
-	/* NOTE: prerendered_cube is called from scroll(), so keep them
-	 * together */
-	{ prerendered_cube_sync, prerendered_cube_init, NULL, 12 },
+	/* NOTE: prerendered_cube is called from scroll() and sin_bar(), so
+	 * keep them together */
+	{ prerendered_cube_sync, prerendered_cube_init, NULL, 7 },
+	{ sin_bar, sin_bar_init, clear_screen, 20 },
 	{ scroll, scroll_init, fade_to_black, 25 },
 	{ crypto_pts, crypto_pts_init, clear_screen, 18 },
 	{ end, NULL, clear_screen, 0 },

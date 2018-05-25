@@ -91,8 +91,10 @@ scroll_init(void)
 		VDP_loadTileData((const u32*)empty, set_tile, 1, 0);
 	}
 
-	load_next_image();
+	cube_inc_x = 1;
+	cube_inc_y = -1;
 
+	load_next_image();
 }
 
 u8 render_tile = 1;
