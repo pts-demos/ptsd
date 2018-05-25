@@ -23,6 +23,8 @@ play_effect(void)
 		if (next < effects || !next->effect)
 			return;
 		current_effect->transition();
+		if (current_effect->uninit != NULL)
+			current_effect->uninit();
 		if (next->init)
 			next->init();
 		current_effect = next;

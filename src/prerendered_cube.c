@@ -3,10 +3,10 @@
 #include "prerendered_cube.h"
 #include "sprite.h"
 
-Sprite* cube_sprite;
 int cube_pos_x;
 int cube_pos_y;
 int cube_current_animation;
+Sprite* cube_sprite;
 
 void prerendered_cube_init(void) {
     SYS_disableInts();
@@ -25,6 +25,12 @@ void prerendered_cube_init(void) {
 	SPR_setAnim(cube_sprite, cube_current_animation);
 
 	VDP_setPalette(PAL0, default_cube_sprite.palette->data);
+}
+
+void prerendered_cube_uninit(void) {
+	SPR_setPosition(cube_sprite, 400, 300);
+	VDP_waitVSync();
+	SPR_update();
 }
 
 void prerendered_cube(void) {
