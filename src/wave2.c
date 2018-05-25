@@ -37,6 +37,7 @@ u16 wave2_sin_time_count;
 
 void wave2_fade(void)
 {
+	MEM_free(wave2_tilebuffer);
     SYS_disableInts();
     VDP_setHInterrupt(FALSE);
     SYS_enableInts();
@@ -45,8 +46,6 @@ void wave2_fade(void)
     VDP_resetScreen();
     VDP_setHInterrupt(0);
     VDP_setPlanSize(64, 64);
-
-	MEM_free(wave2_tilebuffer);
 }
 
 void
@@ -140,6 +139,8 @@ wave2(void)
         counter = 0;
 
     wave2_scroll += 1;
+	if (counter > wave2_sin_time_count)
+		counter = counter % wave2_sin_time_count;
     sin_time = wave2_sin_time_data[counter];
 
 	// As the wave pattern is drawn in the center of screen, we only need to
@@ -179,8 +180,9 @@ wave2(void)
 
 			wave2_distance = silly_sqrt((wave2_distance_x * wave2_distance_x)
 				& (wave2_distance_y * wave2_distance_y)) << 1;
-			if (wave2_distance > 160)
-				wave2_distance = 160;
+
+			if (wave2_distance > wave2_sin_wave_count)
+				wave2_distance = wave2_distance % wave2_sin_wave_count;
 
             // The distance we work with are [0,160] (half screen width at maximum, height is less and doesn't really matter)
             // To add the time component (the sin inside the sin) we pre-compute a sin table that contains values from 0 to 160
@@ -219,7 +221,7 @@ wave2(void)
     }
 
 	// Update the tile data for the top left quarter of the screen
-	// As the same tiles are used everywher else, they will also update
+	// As the same tiles are used everywhere else, they will also update
 	u16 tileIndex = 1;
     for (u32 y = 0; y < screenTileHeightQuarter; y++)
     {
