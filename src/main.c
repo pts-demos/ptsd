@@ -27,8 +27,8 @@ struct effect effects[] = {
 	{ wave2, wave2_init, fade_to_black, 12 },
 	/* NOTE: prerendered_cube is called from scroll() and sin_bar(), so
 	 * keep them together */
-	{ prerendered_cube_sync, prerendered_cube_init, NULL, 7 },
-	{ sin_bar, sin_bar_init, clear_screen, 20 },
+	{ prerendered_cube_sync, prerendered_cube_init, clear_preserve_sprites, 7 },
+	{ sin_bar, sin_bar_init, clear_preserve_sprites, 20 },
 	{ scroll, scroll_init, fade_to_black, 25 },
 	{ crypto_pts, crypto_pts_init, clear_screen, 18 },
 	{ end, NULL, clear_screen, 0 },
