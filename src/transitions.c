@@ -39,7 +39,7 @@ clear_screen(void)
 	SPR_end();
 	VDP_resetScreen();
 	VDP_setPlanSize(64, 64);
-	VDP_enableInts();
+	SYS_enableInts();
 }
 
 void fade_to_black(void)
