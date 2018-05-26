@@ -18,8 +18,8 @@
 #define screenPixelWidthQuarter 160
 #define screenPixelHeight 240
 #define screenPixelHeightQuarter 120
-#define screenPixelHalfX screenPixelWidth / 2
-#define screenPixelHalfY screenPixelHeight / 2
+#define screenPixelHalfX (screenPixelWidth / 2)
+#define screenPixelHalfY (screenPixelHeight / 2)
 
 u32* wave_tilebuffer = NULL;
 extern u16 rgbToU16(u8 r, u8 g, u8 b);
@@ -28,8 +28,8 @@ s16 wave_scroll = 10;
 // distance to the screen center point
 u16 distance_x = 0;
 u16 distance_y = 0;
-s16 pixel_x = 0;
-s16 pixel_y = 0;
+u16 pixel_x = 0;
+u16 pixel_y = 0;
 u8 channel_index = 0;
 u32 arrIndex = 0;
 u16 distance = 0;
