@@ -6,6 +6,7 @@
 #include "pts_math.h"
 #include "sin_time_data.h"
 #include "sin_wave_data.h"
+#include "wave1.h"
 
 #define columnsInTile 8
 #define rowsInTile 8
@@ -49,6 +50,8 @@ void wave1_fade(void) {
     VDP_setPlanSize(64, 64);
 }
 
+static void wave1_nosync(void);
+
 void
 wave1_init(void)
 {
@@ -82,6 +85,13 @@ wave1_init(void)
         palettes[i] = rgbToU16(r, g, b);
         VDP_setPaletteColor(i, palettes[i]);
     }
+
+	wave1_sin_wave_data = get_sin_wave_ptr();
+	wave1_sin_wave_count = get_sin_wave_count();
+	wave1_sin_time_data = get_sin_time_ptr();
+	wave1_sin_time_count = get_sin_time_count();
+	/* draw the effect once, before placing the tiles */
+	wave1_nosync();
 
 	// Draw a sequence of tiles that will be updated every frame
     // Tile 0 is background, so start indexing at 1
@@ -120,15 +130,10 @@ wave1_init(void)
 			VDP_fillTileMapRect(PLAN_A, tileIndex, tile_x, tile_y, 1, 1);
 		}
 	}
-
-	wave1_sin_wave_data = get_sin_wave_ptr();
-	wave1_sin_wave_count = get_sin_wave_count();
-	wave1_sin_time_data = get_sin_time_ptr();
-	wave1_sin_time_count = get_sin_time_count();
 }
 
 void
-wave1(void)
+wave1_nosync(void)
 {
     static u16 counter = 0;
     static u16 sin_time = 0;
@@ -226,6 +231,12 @@ wave1(void)
         }
     }
 
-    VDP_waitVSync();
+}
+
+void
+wave1(void)
+{
+	wave1_nosync();
+	VDP_waitVSync();
 }
 
