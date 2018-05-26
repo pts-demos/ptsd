@@ -99,7 +99,7 @@ scroll_init(void)
 	}
 
 	cube_inc_x = 1;
-	cube_inc_y = -1;
+	cube_inc_y = -3;
 
 	load_next_image();
 }
