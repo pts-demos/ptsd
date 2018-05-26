@@ -21,7 +21,7 @@ static const Image *scrolltext[] = {
 	&greets_2,
 	&greets_3,
 	&greets_4,
-	&greets_5,
+	&blank,
 	NULL,
 };
 static unsigned img = 0;
