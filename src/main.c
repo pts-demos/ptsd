@@ -36,8 +36,8 @@ struct effect effects[] = {
 	{ prerendered_cube_sync, prerendered_cube_init, clear_preserve_sprites, 1000 },
 	{ sin_bar, sin_bar_init, clear_preserve_sprites, 2100 },
 	{ scroll, scroll_init, clear_screen, 2700 },
-	{ crypto_pts, crypto_pts_init, clear_screen, 2150 },
-	{ black, black_init, clear_screen, 250 },
+	{ crypto_pts, crypto_pts_init, clear_screen, 1900 },
+	{ black, black_init, clear_screen, 100 },
 	{ end, NULL, clear_screen, 0 },
 	{ NULL, NULL, NULL, 0 },
 };
