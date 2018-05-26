@@ -33,7 +33,7 @@ play_effect(void)
 	if (!current_effect->duration)
 		return;
 	u32 elapsed = getTick() - effect_started;
-	if (elapsed >= 300 * current_effect->duration)
+	if (elapsed >= 3 * current_effect->duration)
 		next_effect();
 }
 

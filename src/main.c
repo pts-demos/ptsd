@@ -28,16 +28,16 @@ void black_init() {
 
 struct effect effects[] = {
 	/* render func, init func, transition, duration (sec) */
-	{ black, black_init, clear_screen, 2 },
-	{ wave1, wave1_init, wave1_fade, 10 },
-	{ interrupt_test, init_interrupt_test, fade_to_black, 14 },
-	{ wave2, wave2_init, wave2_fade, 7 },
+	{ black, black_init, clear_screen, 200 },
+	{ wave1, wave1_init, wave1_fade, 1000 },
+	{ interrupt_test, init_interrupt_test, fade_to_black, 1400 },
+	{ wave2, wave2_init, wave2_fade, 700 },
 	/* NOTE: prerendered_cube is called from scroll() and sin_bar(), so
 	 * keep them together */
-	{ prerendered_cube_sync, prerendered_cube_init, clear_preserve_sprites, 10 },
-	{ sin_bar, sin_bar_init, clear_preserve_sprites, 21 },
-	{ scroll, scroll_init, clear_screen, 23 },
-	{ crypto_pts, crypto_pts_init, clear_screen, 22 },
+	{ prerendered_cube_sync, prerendered_cube_init, clear_preserve_sprites, 1000 },
+	{ sin_bar, sin_bar_init, clear_preserve_sprites, 2100 },
+	{ scroll, scroll_init, clear_screen, 2300 },
+	{ crypto_pts, crypto_pts_init, clear_screen, 2200 },
 	{ end, NULL, clear_screen, 0 },
 	{ NULL, NULL, NULL, 0 },
 };

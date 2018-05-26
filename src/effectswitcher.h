@@ -5,7 +5,7 @@ struct effect {
 	void (*effect)(void);
 	void (*init)(void);
 	void (*transition)(void);
-	u32 duration; /* seconds */
+	u32 duration; /* 1/100 seconds */
 };
 
 struct effect *current_effect;
