@@ -176,7 +176,7 @@ wave1_nosync(void)
 	static u32 loops = 0;
 	loops++;
 	static u8 effect = 1;
-	if (loops == 30) {
+	if (loops == 70) {
 		effect = 2;
 		wave1_switch_palette();
 	}
