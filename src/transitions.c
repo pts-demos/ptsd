@@ -33,11 +33,13 @@ clear_preserve_sprites(void)
 void
 clear_screen(void)
 {
+	SYS_disableInts();
+	VDP_setHInterrupt(FALSE);
 	VDP_clearSprites();
 	SPR_end();
 	VDP_resetScreen();
-	VDP_setHInterrupt(0);
 	VDP_setPlanSize(64, 64);
+	VDP_enableInts();
 }
 
 void fade_to_black(void)
