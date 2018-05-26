@@ -58,7 +58,9 @@ main(void)
 	PSG_init();
 	JOY_init();
 	SND_startPlay_VGM(pts_1989);
+#if 0
 	JOY_setEventHandler(joy_cb);
+#endif
 	effects_init();
 	while (1)
 		play_effect();
