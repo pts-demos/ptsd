@@ -15,12 +15,6 @@ int cube_inc_x;
 int cube_inc_y;
 
 void
-prerendered_cube_trans(void)
-{
-	VDP_resetScreen();
-}
-
-void
 prerendered_cube_init(void)
 {
 	SYS_disableInts();

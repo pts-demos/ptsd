@@ -165,9 +165,10 @@ scroll(void) {
 		VDP_setPaletteColor(14, first);
 	}
 
-	VDP_fillTileMapRect(PLAN_B,
-	    TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, render_tile),
-	    42 - (scroll_count >> 3), 0, 1, 30);
+	if (scroll_count > -2048)
+		VDP_fillTileMapRect(PLAN_B,
+		    TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, render_tile),
+		    42 - (scroll_count >> 3), 0, 1, 30);
 
 	scroll_count -= 8;
 
