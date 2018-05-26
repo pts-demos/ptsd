@@ -133,6 +133,34 @@ wave1_init(void)
 }
 
 void
+wave1_switch_palette()
+{
+    u16 palettes[17];
+
+    u8 r = 0;
+    u8 g = 0;
+    u8 b = 0;
+
+    for (int i = 1; i < 16; i++)
+    {
+        b += 1;
+        if (b > 7) {
+            b = 7;
+            g++;
+            if (g > 7) {
+                g = 7;
+                r++;
+                if (r > 6) {
+                    r = 7;
+                }
+            }
+        }
+        palettes[i] = rgbToU16(r, g, b);
+        VDP_setPaletteColor(i, palettes[i]);
+    }
+}
+
+void
 wave1_nosync(void)
 {
     static u16 counter = 0;
@@ -141,11 +169,17 @@ wave1_nosync(void)
     static u16 line_to_draw = 0;
 
     counter++;
-    if (counter > wave1_sin_time_count)
-        counter = 0;
+	counter = counter % wave1_sin_time_count;
 
     wave_scroll += 1;
     sin_time = wave1_sin_time_data[counter];
+	static u32 loops = 0;
+	loops++;
+	static u8 effect = 1;
+	if (loops == 30) {
+		effect = 2;
+		wave1_switch_palette();
+	}
 
 	// As the wave pattern is drawn in the center of screen, we only need to
 	// calculate one quarter of the screen - the rest can be duplicated to the
@@ -179,7 +213,14 @@ wave1_nosync(void)
 			/// multiply by 8
             pixel_x = x << 3;
             distance_x = abs(screenPixelHalfX - pixel_x) + sin_time;
-            distance = silly_sqrt((distance_x*distance_x) + (distance_y*distance_y));
+			if (effect == 1) {
+				distance = silly_sqrt((distance_x*distance_x) + (distance_y*distance_y));
+			} else {
+				distance = silly_sqrt((distance_x * distance_x)
+				    & (distance_y * distance_y)) << 1;
+			}
+			distance = distance % wave1_sin_wave_count;
+
 
             // The distance we work with are [0,160] (half screen width at maximum, height is less and doesn't really matter)
             // To add the time component (the sin inside the sin) we pre-compute a sin table that contains values from 0 to 160
