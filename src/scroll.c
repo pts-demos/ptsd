@@ -34,9 +34,10 @@ load_next_image(void)
 	VDP_clearTileMapRect(PLAN_A, xpos, 15, 64, 2);
 	if (scrolltext[img] == NULL)
 		return;
+	u16 tileidx = TILE_USERINDEX + 40 + (img % 2) * 128;
 	if (scrolltext[img] != &blank)
 		VDP_drawImageEx(PLAN_A, scrolltext[img],
-		    TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_USERINDEX+100+128*img),
+		    TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileidx),
 		    xpos, 15, TRUE, TRUE);
 	img++;
 }
