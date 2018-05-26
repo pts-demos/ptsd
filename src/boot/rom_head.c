@@ -23,9 +23,9 @@ struct rom_header {
 
 const struct rom_header rom_header = {
 	.console = "SEGA MEGA DRIVE",
-	.copyright = "(C) PTS    2013",
-	.title_local = "DEMON NIMI TAHAN",
-	.title_int = "DEMON NIMI TAHAN",
+	.copyright = "(C) PTS    2018",
+	.title_local = "PTSD",
+	.title_int = "PTSD",
 	.serial = "GM 00000000-00",
 	.checksum = 0x0000,
 	.IOSupport = "JD",
