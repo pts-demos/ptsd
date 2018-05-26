@@ -23,7 +23,7 @@
 
 u32* wave_tilebuffer = NULL;
 extern u16 rgbToU16(u8 r, u8 g, u8 b);
-s16 wave_scroll = 10;
+u16 wave_scroll = 10;
 
 // distance to the screen center point
 u16 distance_x = 0;
