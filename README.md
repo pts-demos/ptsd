@@ -1,4 +1,36 @@
-# Sega Demo #
+# PTSD by pts #
+## Released at Simulaatio 8
+
+Placed 4 / 6 in the oldschool compo
+
+[Pouet link]()
+[Youtube link]()
+
+
+### Compiling
+
+* Get [gendev](https://github.com/kubilus1/gendev)
+* Check out gendev revision [revision here]
+* Modify gendev SGDK cloning task to checkout SGDK revision [revision here]
+* Run `make`, wait until the next ice age begins
+* Add `export GENDEV=/opt/gendev` in your .bashrc or whatever
+* Checkout this repo, cd in it
+* `make`
+* The rom image is: out/rom.bin
+
+### Music howto
+
+* Get [DefleMask](http://www.deflemask.com/)
+* On Linux you need 32-bit. I use a chroot
+* Open res/pts_1989.dmf in DefleMask
+* From file menu -> save as VGM
+
+### Credits
+
+owb: code
+Sonicus: code, graphics, hardware
+lotheac: code, build chain, fixing gekko's code
+Gekko: code, music, graphics, bug writing
 
 ### Useful links ###
 * [SGDK](https://github.com/Stephane-D/SGDK)
