@@ -27,10 +27,10 @@ Placed 4 / 6 in the oldschool compo
 
 ### Credits
 
-owb: code
-Sonicus: code, graphics, hardware
-lotheac: code, build chain, fixing gekko's code
-Gekko: code, music, graphics, bug writing
+* owb: code
+* Sonicus: code, graphics, hardware
+* lotheac: code, build chain, fixing gekko's code
+* Gekko: code, music, graphics, bug writing
 
 ### Useful links ###
 * [SGDK](https://github.com/Stephane-D/SGDK)
