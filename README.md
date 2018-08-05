@@ -10,19 +10,19 @@ Placed 4 / 6 in the oldschool compo
 ### Compiling
 
 * Get [gendev](https://github.com/kubilus1/gendev)
-* Check out gendev revision [revision here]
-* Modify gendev SGDK cloning task to checkout SGDK revision [revision here]
+* Check out gendev revision d3506bf389214b0133c3b1e9ba8ccd873efa8d29 (Sun Aug 6 14:24:32 2017 -0400)
+* Modify gendev SGDK cloning task to checkout SGDK revision `bd013e9eec94e37baac1b4351beee2a2f2661c74` (Thu Jul 20 22:07:06 2017 +0200) in `gendev/sgdk/Makefile`
 * Run `make`, wait until the next ice age begins
 * Add `export GENDEV=/opt/gendev` in your .bashrc or whatever
 * Checkout this repo, cd in it
 * `make`
-* The rom image is: out/rom.bin
+* The rom image is: `out/rom.bin`
 
 ### Music howto
 
 * Get [DefleMask](http://www.deflemask.com/)
 * On Linux you need 32-bit. I use a chroot
-* Open res/pts_1989.dmf in DefleMask
+* Open `res/pts_1989.dmf` in DefleMask
 * From file menu -> save as VGM
 
 ### Credits
