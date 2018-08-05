@@ -3,9 +3,8 @@
 
 Placed 4 / 6 in the oldschool compo
 
-[Pouet link]()
-[Youtube link]()
-
+* [Pouet link](http://www.pouet.net/prod.php?which=76304)
+* [Youtube link](https://www.youtube.com/watch?v=a-dsYxuuVTw)
 
 ### Compiling
 
