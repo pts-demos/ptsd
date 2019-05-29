@@ -5,6 +5,7 @@ Placed 4 / 6 in the oldschool compo
 
 * [Pouet link](http://www.pouet.net/prod.php?which=76304)
 * [Youtube link](https://www.youtube.com/watch?v=a-dsYxuuVTw)
+* [Download](https://github.com/pts-demos/ptsd/releases/download/1.0/ptsd.bin)
 
 ### Compiling
 
